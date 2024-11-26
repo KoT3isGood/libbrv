@@ -1,0 +1,4 @@
+/.zig-cache/
+/lib/
+/.git/
+/zig-out/
