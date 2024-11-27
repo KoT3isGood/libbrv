@@ -14,6 +14,7 @@ pub fn build(b: *std.Build) void {
         .files = &.{
             //
             "source/parser.c",
+            "source/analyzer.c",
         },
     });
     lib.linkLibC();

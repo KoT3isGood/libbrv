@@ -1,39 +1,6 @@
 #pragma once
 
-typedef enum brv_bricktype {
-  BRV_UNDEFINED = 0,
-  BRV_BRICK = 1,
-  BRV_SCALABLE_BRICK = 2,
-} brv_bricktype;
-
-typedef struct brv_material {
-  float color[3];
-  float alpha;
-  char* pattern;
-  char* material;
-} material;
-
-typedef struct brv_brick {
-  struct brv_brick* next;
-  enum brv_bricktype type;
-
-  struct brv_material material;
-
-  float position[3];
-  float rotation[3];
-} brv_brick;
-
-
-// raw brick parameter
-typedef struct {
-  char* name;
-  unsigned short num;
-  unsigned int size;
-  void* data;
-} brv_brick_parameter;
-
-
-// from /Source/BrickRigs/BrickEditor/BrickEditorSaveVersion.h
+// from Source/BrickRigs/BrickEditor/BrickEditorSaveVersion.h
 // Current save version, the legacy UBrickStatics version ended at 6
 #define BR_SAVE_VERSION 14
 // Version where brick units started to be saved as a float instead of uint16
@@ -61,11 +28,42 @@ typedef struct {
 // Version where input channels were introduced and the input axes enum has been changed
 #define BR_SAVE_INPUT_CHANNEL_VERSION 6
 
-// Fluppi393: Legacy version where the brick location accuracy was increased
+// Legacy version where the brick location accuracy was increased
 // kotofyt: not sure where it is used since v6 uses v3's
 #define BR_SAVE_SMALLER_STEPS_VERSION 4
 // Version where the saved element size has been fixed
 #define BR_SAVE_FIXED_ELEMENT_SIZE_VERSION 3
+
+
+// raw brick parameter
+typedef struct {
+  char* name;
+  int datasize;
+  void* data;
+} brv_brick_parameter;
+
+typedef struct brv_material {
+  float color[3];
+  float alpha;
+  char* pattern;
+  char* material;
+} material;
+
+typedef struct brv_brick {
+  struct brv_brick* next;
+  char* name;
+
+  char numparameters;
+  brv_brick_parameter* parameters;
+
+  // materials
+  struct brv_material material;
+  // scalable bricks
+  float size[3];
+
+  float position[3];
+  float rotation[3];
+} brv_brick;
 
 
 
@@ -83,7 +81,13 @@ typedef struct {
 
 } brv_vehicle;
 
+typedef void(*brv_analyze_callback)(const char*, int, void*);
+
+// reads raw brv and gets all bricks and properties
 brv_vehicle brv_read(unsigned char* contents);
 
+// converts properties into brick parameters
+void brv_analyze(brv_vehicle* vehicle, brv_analyze_callback callback); 
 
+// destroys vehicle
 void brv_close(brv_vehicle vehicle);
