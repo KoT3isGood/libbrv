@@ -15,6 +15,7 @@ brv_vehicle brv_read(unsigned char* contents) {
 
   brv_brick* startingbrick = 0;
   brv_brick* currentbrick = 0;
+  int p = 0;
 
   // check if version is supported
   if (vehicle.version>BR_SAVE_VERSION) {
@@ -29,11 +30,10 @@ brv_vehicle brv_read(unsigned char* contents) {
     goto remake;
   }
 
-  int p = 0;
 
 legacy:
   p=3;
-  printf("Found %i objects:\n",vehicle.numobjects);
+  printf("loading %i bricks\n",vehicle.numobjects);
   for (int i = 0;i<vehicle.numobjects;i++) {
     brv_brick* vbrick = (brv_brick*)malloc(sizeof(brv_brick));
 
@@ -86,11 +86,13 @@ bricktraverse_legacy:
     brick->name = brickname;
 
     // traverse through all properties
-    char properties = contents[p++];
+    unsigned char properties = contents[p++];
     brick->numparameters = properties;
     brick->parameters = (brv_brick_parameter*)malloc(sizeof(brv_brick_parameter)*properties);
     for (int j = 0;j<properties;j++) {
       int propertylen = contents[p]+256*contents[p+1]+256*256*contents[p+2]+256*256*256*contents[p+3];
+
+
       p+=4;
     
 
@@ -102,8 +104,20 @@ bricktraverse_legacy:
 
       
       p+=propertylen;
-      char datasize = contents[p++];
-      //printf("    %s: %i bytes\n",property, datasize);
+      unsigned int datasize = contents[p++];
+
+      // text fix, fluppi created dumb format for sizes
+      // might not be compatible with possibly modded stuff
+      if (!strcmp(property,"Text")) {
+        //printf("datasize: %i\n",datasize);
+        datasize=(contents[p]<<0)+(contents[p+1]<<8)+((unsigned int)contents[p+2]<<16)+((unsigned int)contents[p+3]<<24);
+
+        // fixes overflowed text
+        if ((int)datasize<0) {
+          datasize=2*(-(int)datasize);
+        }
+        datasize+=4;
+      }
 
       parameter.datasize = datasize;
 
@@ -155,9 +169,21 @@ remake:
   vehicle.numclasses = contents[3]+contents[4]*256;
   vehicle.numproperties = contents[5]+contents[6]*256;
   p=7;
+  printf("loading %i bricks\n",vehicle.numobjects);
   
   for (int i = 0;i<vehicle.numclasses;i++) {
-    char classsize = contents[p++];
+    char bricklen = contents[p++];
+    char* brickname = (char*)calloc(bricklen+1,0);
+    memcpy(brickname,contents+p,bricklen);
+    printf("%s\n",brickname);
+    p+=bricklen;
+  }  
+  for (int i = 0;i<vehicle.numproperties;i++) {
+    char bricklen = contents[p++];
+    char* brickname = (char*)calloc(bricklen+1,0);
+    memcpy(brickname,contents+p,bricklen);
+    printf("%s\n",brickname);
+    p+=bricklen;
   }
 
   return vehicle;

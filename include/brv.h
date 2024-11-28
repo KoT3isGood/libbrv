@@ -38,7 +38,7 @@
 // raw brick parameter
 typedef struct {
   char* name;
-  int datasize;
+  unsigned int datasize;
   void* data;
 } brv_brick_parameter;
 
@@ -53,7 +53,7 @@ typedef struct brv_brick {
   struct brv_brick* next;
   char* name;
 
-  char numparameters;
+  unsigned char numparameters;
   brv_brick_parameter* parameters;
 
   // materials
