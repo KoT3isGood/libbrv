@@ -3,7 +3,7 @@
 #include "stdint.h"
 #include "stdlib.h"
 #include "memory.h"
-
+#include "ctype.h"
 
 
 
@@ -73,9 +73,12 @@ bricktraverse_legacy:
         brickname[currentchar] = '\0';
         break;
       }
-      brickname[currentchar] = '\0';
-      currentchar--;
+      if (isdigit(brickname[currentchar])) {
+        brickname[currentchar] = '\0';
+        currentchar--;
+      }
     }
+
 
 
     
@@ -167,6 +170,7 @@ bricktraverse_legacy:
 remake:
 
   vehicle.numclasses = contents[3]+contents[4]*256;
+  vehicle.classes = (char**)malloc(sizeof(char*)*vehicle.numclasses);
   vehicle.numproperties = contents[5]+contents[6]*256;
   p=7;
   
@@ -175,7 +179,8 @@ remake:
     char bricklen = contents[p++];
     char* brickname = (char*)calloc(bricklen+1,0);
     memcpy(brickname,contents+p,bricklen);
-    printf("  %s\n",brickname);
+    vehicle.classes[i]=brickname;
+    //printf("  %s\n",brickname);
     p+=bricklen;
   }  
   printf("Properties (%i):\n", vehicle.numproperties);
@@ -183,13 +188,13 @@ remake:
     char bricklen = contents[p++];
     char* brickname = (char*)calloc(bricklen+1,0);
     memcpy(brickname,contents+p,bricklen);
-    printf("  %s\n",brickname);
+    //printf("  %s\n",brickname);
     p+=bricklen;
     unsigned short numelements=(contents[p]<<0)+(contents[p+1]<<8);
     p+=2;
     unsigned int datasize = (contents[p]<<0)+(contents[p+1]<<8)+((unsigned int)contents[p+2]<<16)+((unsigned int)contents[p+3]<<24);
     p+=4;
-    printf("    %i:%i\n", numelements,datasize);
+    //printf("    %i:%i\n", numelements,datasize);
     p+=datasize;
     unsigned short datatype = (contents[p]<<0)+(contents[p+1]<<8);
     p+=2;
@@ -200,8 +205,11 @@ remake:
   printf("Bricks (%i):\n",vehicle.numobjects);
 
   for (int i = 0;i<vehicle.numobjects;i++) {
+    brv_brick* brick = (brv_brick*)malloc(sizeof(brv_brick));
+
     unsigned short brickid = (contents[p]<<0)+(contents[p+1]<<8);
-    printf("    %i\n", brickid);
+    brick->name=vehicle.classes[brickid];
+    printf("    %s\n",vehicle.classes[brickid]);
     p+=2;
     unsigned int datasize = (contents[p]<<0)+(contents[p+1]<<8)+((unsigned int)contents[p+2]<<16)+((unsigned int)contents[p+3]<<24);
     p+=4;
@@ -212,16 +220,39 @@ remake:
     }
 
     unsigned int x1 = (contents[p]<<0)+(contents[p+1]<<8)+((unsigned int)contents[p+2]<<16)+((unsigned int)contents[p+3]<<24);
-    float x = *(float*)&x1;
+    float x = *(float*)&x1/100;
     p+=4;
     unsigned int y1 = (contents[p]<<0)+(contents[p+1]<<8)+((unsigned int)contents[p+2]<<16)+((unsigned int)contents[p+3]<<24);
-    float y = *(float*)&y1;
+    float y = *(float*)&y1/100;
     p+=4;
     unsigned int z1 = (contents[p]<<0)+(contents[p+1]<<8)+((unsigned int)contents[p+2]<<16)+((unsigned int)contents[p+3]<<24);
-    float z = *(float*)&z1;
+    float z = *(float*)&z1/100;
     p+=4;
-    printf("at: %f, %f, %f\n",x,y,z);
-    p+=12;
+    
+    brick->position[0]=x;
+    brick->position[1]=y;
+    brick->position[2]=z;
+
+    x1 = (contents[p]<<0)+(contents[p+1]<<8)+((unsigned int)contents[p+2]<<16)+((unsigned int)contents[p+3]<<24);
+    x = *(float*)&x1;
+    p+=4;
+    y1 = (contents[p]<<0)+(contents[p+1]<<8)+((unsigned int)contents[p+2]<<16)+((unsigned int)contents[p+3]<<24);
+    y = *(float*)&y1;
+    p+=4;
+    z1 = (contents[p]<<0)+(contents[p+1]<<8)+((unsigned int)contents[p+2]<<16)+((unsigned int)contents[p+3]<<24);
+    z = *(float*)&z1;
+    p+=4;
+    brick->rotation[0]=x;
+    brick->rotation[1]=y;
+    brick->rotation[2]=z;
+    if (currentbrick) {
+      currentbrick->next = brick;
+      currentbrick=currentbrick->next;
+    } else {
+      startingbrick = brick;
+      currentbrick=brick;
+    }
+
   }
   return vehicle;
 };
