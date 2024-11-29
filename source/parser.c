@@ -203,11 +203,25 @@ remake:
     unsigned short brickid = (contents[p]<<0)+(contents[p+1]<<8);
     printf("    %i\n", brickid);
     p+=2;
-    unsigned int datasize = (contents[p]<<0)+(contents[p+1]<<8)+((unsigned int)contents[p+2]<<16)+((unsigned int)contents[p+3]<<24);;
+    unsigned int datasize = (contents[p]<<0)+(contents[p+1]<<8)+((unsigned int)contents[p+2]<<16)+((unsigned int)contents[p+3]<<24);
     p+=4;
     unsigned char numproperties = (contents[p]);
     p+=1;
+    for (int i = 0;i<numproperties;i++) {
+      p+=4;
+    }
 
+    unsigned int x1 = (contents[p]<<0)+(contents[p+1]<<8)+((unsigned int)contents[p+2]<<16)+((unsigned int)contents[p+3]<<24);
+    float x = *(float*)&x1;
+    p+=4;
+    unsigned int y1 = (contents[p]<<0)+(contents[p+1]<<8)+((unsigned int)contents[p+2]<<16)+((unsigned int)contents[p+3]<<24);
+    float y = *(float*)&y1;
+    p+=4;
+    unsigned int z1 = (contents[p]<<0)+(contents[p+1]<<8)+((unsigned int)contents[p+2]<<16)+((unsigned int)contents[p+3]<<24);
+    float z = *(float*)&z1;
+    p+=4;
+    printf("at: %f, %f, %f\n",x,y,z);
+    p+=12;
   }
   return vehicle;
 };
