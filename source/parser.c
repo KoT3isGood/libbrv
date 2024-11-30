@@ -177,7 +177,8 @@ remake:
   printf("Classes (%i):\n", vehicle.numclasses);
   for (int i = 0;i<vehicle.numclasses;i++) {
     char bricklen = contents[p++];
-    char* brickname = (char*)calloc(bricklen+1,0);
+    char* brickname = (char*)malloc(bricklen+1);
+    brickname[bricklen]=0;
     memcpy(brickname,contents+p,bricklen);
     vehicle.classes[i]=brickname;
     //printf("  %s\n",brickname);
@@ -186,9 +187,10 @@ remake:
   printf("Properties (%i):\n", vehicle.numproperties);
   for (int i = 0;i<vehicle.numproperties;i++) {
     char bricklen = contents[p++];
-    char* brickname = (char*)calloc(bricklen+1,0);
+    char* brickname = (char*)malloc(bricklen+1);
+    brickname[bricklen]=0;
     memcpy(brickname,contents+p,bricklen);
-    //printf("  %s\n",brickname);
+    printf("  %s\n",brickname);
     p+=bricklen;
     unsigned short numelements=(contents[p]<<0)+(contents[p+1]<<8);
     p+=2;
@@ -196,10 +198,12 @@ remake:
     p+=4;
     //printf("    %i:%i\n", numelements,datasize);
     p+=datasize;
-    unsigned short datatype = (contents[p]<<0)+(contents[p+1]<<8);
+    unsigned short elementsize = (contents[p]<<0)+(contents[p+1]<<8);
     p+=2;
-    if (!datatype) {
-      p+=4;
+    if (elementsize>0) {
+      //printf("each element is %i bytes\n",elementsize);
+    } else {
+      p+=2*numelements;
     }
   }
   printf("Bricks (%i):\n",vehicle.numobjects);
@@ -216,6 +220,8 @@ remake:
     unsigned char numproperties = (contents[p]);
     p+=1;
     for (int i = 0;i<numproperties;i++) {
+      short property=(contents[p]<<0)+(contents[p+1]<<8);
+      short index = (contents[p+3]<<0)+(contents[p+4]<<8);
       p+=4;
     }
 
@@ -252,8 +258,8 @@ remake:
       startingbrick = brick;
       currentbrick=brick;
     }
-
   }
+  vehicle.bricks = startingbrick;  
   return vehicle;
 };
 void brv_close(brv_vehicle vehicle) {

@@ -16,7 +16,7 @@ int main() {
   fclose(file);
 
   brv_vehicle vehicle = brv_read(filedata);
-  //brv_analyze(&vehicle,0);
-  //printf("%s\n",vehicle.bricks->material.material);
+  brv_analyze(&vehicle,0);
+  printf("%s\n",vehicle.bricks->position);
   brv_close(vehicle);
 }
