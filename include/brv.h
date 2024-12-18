@@ -40,6 +40,15 @@ typedef struct {
   char* name;
   unsigned int datasize;
   void* data;
+
+  // v7+ may host params in itself
+  // they wont be included inside of legacy or 
+  int numparameters;
+  short size;
+  short* sizes;
+  short* offsets;
+
+
 } brv_brick_parameter;
 
 typedef struct brv_material {
@@ -91,3 +100,9 @@ void brv_analyze(brv_vehicle* vehicle, brv_analyze_callback callback);
 
 // destroys vehicle
 void brv_close(brv_vehicle vehicle);
+
+// returns brv from brv_vehicle
+// optimization = 0 - no optimizations at all
+// optimization = 1 - optimizes lenght of properties but still keeps 1 property per brick
+// optimization = 2 - optimizes lenght of properties linking to existing properties
+unsigned char* brv_build(brv_vehicle vehicle, int optimization, unsigned int* size);

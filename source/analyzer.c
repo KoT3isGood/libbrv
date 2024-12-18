@@ -18,7 +18,7 @@ legacy:
   for (brick=vehicle->bricks;brick;brick=brick->next) {
     for (int i = 0;i<brick->numparameters;i++) {
       char* name = brick->parameters[i].name;
-      char* contents = brick->parameters[i].data;
+      unsigned char* contents = brick->parameters[i].data;
       if (!strcmp(name,"BrickMaterial")) {
         int size = 
           contents[0]+
@@ -45,6 +45,7 @@ legacy:
         brick->size[1]=contents[1];
         brick->size[2]=contents[2];
         //printf("size: %f,%f,%f\n",brick->size[0],brick->size[1],brick->size[2]);
+        continue;
       }
       // TODO: implement the rest of the stuff
     }
@@ -52,5 +53,20 @@ legacy:
   }
   return;
 remake:
+  brick = 0;
+  for (brick=vehicle->bricks;brick;brick=brick->next) {
+    for (int i = 0;i<brick->numparameters;i++) {
+      char* name = brick->parameters[i].name;
+      unsigned char* contents = brick->parameters[i].data;
+      if (!strcmp(name,"BrickSize")) {
+        brick->size[0]=contents[0];
+        brick->size[1]=contents[1];
+        brick->size[2]=contents[2];
+        continue;
+      }
+
+    }
+  }
+
   return;
 };

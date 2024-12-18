@@ -10,7 +10,6 @@
 brv_vehicle brv_read(unsigned char* contents) {
   brv_vehicle vehicle = {};
   vehicle.version = contents[0];
-  printf("version:%i\n",vehicle.version);
   vehicle.numobjects = contents[1]+contents[2]*256;
 
   brv_brick* startingbrick = 0;
@@ -131,6 +130,8 @@ bricktraverse_legacy:
       p+=datasize;
     }
 
+    // get the sizes
+
     // Fluppi393: Legacy version where the brick location accuracy was increased
     // kotofyt: not sure where it is used since v6 uses v3's
     if (vehicle.version!=BR_SAVE_SMALLER_STEPS_VERSION) {
@@ -154,6 +155,7 @@ bricktraverse_legacy:
     brick->size[0]=1;
     brick->size[1]=1;
     brick->size[2]=1;
+
     // push into array
     if (currentbrick) {
       currentbrick->next = brick;
@@ -174,57 +176,94 @@ remake:
   vehicle.numproperties = contents[5]+contents[6]*256;
   p=7;
   
-  printf("Classes (%i):\n", vehicle.numclasses);
+  // reads string size, the string and puts evertyhing into brickname
   for (int i = 0;i<vehicle.numclasses;i++) {
     char bricklen = contents[p++];
     char* brickname = (char*)malloc(bricklen+1);
     brickname[bricklen]=0;
     memcpy(brickname,contents+p,bricklen);
     vehicle.classes[i]=brickname;
-    //printf("  %s\n",brickname);
     p+=bricklen;
   }  
-  printf("Properties (%i):\n", vehicle.numproperties);
+  vehicle.parameters = malloc(sizeof(brv_brick_parameter)*vehicle.numproperties);
+
+  // reads properties
+  // since each property element is unknown size we need to get offsets
   for (int i = 0;i<vehicle.numproperties;i++) {
+    brv_brick_parameter parameter;
     char bricklen = contents[p++];
     char* brickname = (char*)malloc(bricklen+1);
+    parameter.name = brickname;
     brickname[bricklen]=0;
     memcpy(brickname,contents+p,bricklen);
-    printf("  %s\n",brickname);
     p+=bricklen;
     unsigned short numelements=(contents[p]<<0)+(contents[p+1]<<8);
     p+=2;
     unsigned int datasize = (contents[p]<<0)+(contents[p+1]<<8)+((unsigned int)contents[p+2]<<16)+((unsigned int)contents[p+3]<<24);
     p+=4;
-    //printf("    %i:%i\n", numelements,datasize);
+
     p+=datasize;
     unsigned short elementsize = (contents[p]<<0)+(contents[p+1]<<8);
     p+=2;
+    parameter.size=0;
     if (elementsize>0) {
-      //printf("each element is %i bytes\n",elementsize);
+      parameter.size = elementsize;
     } else {
-      p+=2*numelements;
-    }
-  }
-  printf("Bricks (%i):\n",vehicle.numobjects);
+      int offset = 0;
+      parameter.sizes=(short*)malloc(2*numelements);
+      parameter.offsets=(short*)malloc(2*numelements);
 
+      for (int i = 0;i<numelements;i++) {
+        unsigned short size=(contents[p]<<0)+(contents[p+1]<<8);
+        parameter.sizes[i]=size;
+        parameter.offsets[i]=offset;
+        offset+=size;
+        p+=2;
+      }
+    }
+    vehicle.parameters[i]=parameter;
+  }
+
+  // now read all the bricks
   for (int i = 0;i<vehicle.numobjects;i++) {
     brv_brick* brick = (brv_brick*)malloc(sizeof(brv_brick));
 
+    // read class name first
     unsigned short brickid = (contents[p]<<0)+(contents[p+1]<<8);
     brick->name=vehicle.classes[brickid];
-    printf("    %s\n",vehicle.classes[brickid]);
+
+    // now read all properties
     p+=2;
     unsigned int datasize = (contents[p]<<0)+(contents[p+1]<<8)+((unsigned int)contents[p+2]<<16)+((unsigned int)contents[p+3]<<24);
     p+=4;
     unsigned char numproperties = (contents[p]);
     p+=1;
+    brick->numparameters=numproperties;
+    brick->parameters = (brv_brick_parameter*)malloc(sizeof(brv_brick_parameter)*numproperties);
+
     for (int i = 0;i<numproperties;i++) {
-      short property=(contents[p]<<0)+(contents[p+1]<<8);
-      short index = (contents[p+3]<<0)+(contents[p+4]<<8);
+      unsigned short property=(contents[p]<<0)+(contents[p+1]<<8);
+      unsigned short index = (contents[p+2]<<0)+(contents[p+3]<<8);
+
+      if (!vehicle.parameters[property].size) {
+        int offset = vehicle.parameters[property].offsets[index];
+        brv_brick_parameter param;
+        param.name = vehicle.parameters[property].name;
+        param.datasize = vehicle.parameters[property].sizes[index];
+        param.data = vehicle.parameters[property].data+offset;
+        brick->parameters[i]=param;
+      } else {
+        brv_brick_parameter param;
+        param.name = vehicle.parameters[property].name;
+        param.datasize = vehicle.parameters[property].size;
+        param.data = vehicle.parameters[property].data+param.datasize*index;
+        brick->parameters[i]=param;
+      }
+
       p+=4;
     }
 
+    // position and rotation
     unsigned int x1 = (contents[p]<<0)+(contents[p+1]<<8)+((unsigned int)contents[p+2]<<16)+((unsigned int)contents[p+3]<<24);
     float x = *(float*)&x1/100;
     p+=4;
@@ -251,6 +290,8 @@ remake:
     brick->rotation[0]=x;
     brick->rotation[1]=y;
     brick->rotation[2]=z;
+
+    // push into the stack
     if (currentbrick) {
       currentbrick->next = brick;
       currentbrick=currentbrick->next;
