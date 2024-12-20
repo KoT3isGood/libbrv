@@ -17,6 +17,12 @@ int main() {
 
   brv_vehicle vehicle = brv_read(filedata);
   brv_analyze(&vehicle,0);
-  printf("%f\n",vehicle.bricks->size[0]);
+  printf("%f\n",vehicle.bricks->position[0]);
+  unsigned int size = 0;
+  unsigned char* reconstruction=0;
+  brv_build(vehicle,&size,&reconstruction);
+  file = fopen("Reconstruction.brv","wb");
+  fwrite(reconstruction,1,size,file);
+  fclose(file);
   brv_close(vehicle);
 }

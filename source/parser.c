@@ -86,6 +86,7 @@ bricktraverse_legacy:
 
     brv_brick* brick = (brv_brick*)malloc(sizeof(brv_brick));
     brick->name = brickname;
+    brick->next = 0;
 
     // traverse through all properties
     unsigned char properties = contents[p++];
@@ -201,24 +202,33 @@ remake:
     p+=2;
     unsigned int datasize = (contents[p]<<0)+(contents[p+1]<<8)+((unsigned int)contents[p+2]<<16)+((unsigned int)contents[p+3]<<24);
     p+=4;
-
+    parameter.data = malloc(datasize);
+    memcpy(parameter.data,contents+p,datasize);
     p+=datasize;
     unsigned short elementsize = (contents[p]<<0)+(contents[p+1]<<8);
     p+=2;
     parameter.size=0;
+
+
     if (elementsize>0) {
       parameter.size = elementsize;
     } else {
-      int offset = 0;
-      parameter.sizes=(short*)malloc(2*numelements);
-      parameter.offsets=(short*)malloc(2*numelements);
+      if (numelements==1) {
+         parameter.size=datasize; 
+      } else {
+        int offset = 0;
+        parameter.sizes=(short*)malloc(2*numelements);
+        parameter.offsets=(short*)malloc(2*numelements);
 
-      for (int i = 0;i<numelements;i++) {
-        unsigned short size=(contents[p]<<0)+(contents[p+1]<<8);
-        parameter.sizes[i]=size;
-        parameter.offsets[i]=offset;
-        offset+=size;
-        p+=2;
+        for (int i = 0;i<numelements;i++) {
+
+          unsigned short size=(contents[p]<<0)+(contents[p+1]<<8);
+          parameter.sizes[i]=size;
+          parameter.offsets[i]=offset;
+          offset+=size;
+          p+=2;
+          //printf("%i\n",parameter.sizes[i]);
+        }
       }
     }
     vehicle.parameters[i]=parameter;
@@ -290,6 +300,7 @@ remake:
     brick->rotation[0]=x;
     brick->rotation[1]=y;
     brick->rotation[2]=z;
+    brick->next = 0;
 
     // push into the stack
     if (currentbrick) {

@@ -64,6 +64,13 @@ remake:
         brick->size[2]=contents[2];
         continue;
       }
+      if (!strcmp(name,"Text")) {
+        printf("%i\n",brick->parameters[i].datasize);
+        for (int j =0;j<brick->parameters[i].datasize;j++) {
+          printf("%c",((char*)brick->parameters->data)[j]);
+        }
+        printf("d\n");
+      }
 
     }
   }

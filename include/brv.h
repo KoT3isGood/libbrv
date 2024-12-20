@@ -102,7 +102,4 @@ void brv_analyze(brv_vehicle* vehicle, brv_analyze_callback callback);
 void brv_close(brv_vehicle vehicle);
 
 // returns brv from brv_vehicle
-// optimization = 0 - no optimizations at all
-// optimization = 1 - optimizes lenght of properties but still keeps 1 property per brick
-// optimization = 2 - optimizes lenght of properties linking to existing properties
-unsigned char* brv_build(brv_vehicle vehicle, int optimization, unsigned int* size);
+void brv_build(brv_vehicle vehicle, unsigned int* size, unsigned char** data);
