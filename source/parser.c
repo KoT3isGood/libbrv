@@ -6,8 +6,18 @@
 #include "ctype.h"
 
 
+extern char** dsp;
+extern unsigned int numdsp;
 
 brv_vehicle brv_read(unsigned char* contents) {
+  if (!dsp) {
+    printf("failed to find dynamically sized properties\n");
+  }
+  if (!numdsp) {
+    printf("failed to find dynamically sized properties\n");
+  }
+
+
   brv_vehicle vehicle = {};
   vehicle.version = contents[0];
   vehicle.numobjects = contents[1]+contents[2]*256;
@@ -191,6 +201,7 @@ remake:
   // reads properties
   // since each property element is unknown size we need to get offsets
   for (int i = 0;i<vehicle.numproperties;i++) {
+    printf("p: %i\n",p);
     brv_brick_parameter parameter;
     char bricklen = contents[p++];
     char* brickname = (char*)malloc(bricklen+1);
@@ -205,16 +216,35 @@ remake:
     parameter.data = malloc(datasize);
     memcpy(parameter.data,contents+p,datasize);
     p+=datasize;
-    unsigned short elementsize = (contents[p]<<0)+(contents[p+1]<<8);
-    p+=2;
-    parameter.size=0;
+
+    char isdynamicallysized = 0;
+    for (int i = 0;i<numdsp;i++) {
+      if (!strcmp(dsp[i],brickname)) {
+        isdynamicallysized = 1;
+        break;
+      }
+    }
+    if(isdynamicallysized&&numelements>1) {
+
+      unsigned short elementsize = (contents[p]<<0)+(contents[p+1]<<8);
+      p+=2;
+      parameter.size=0;
+      printf("g %s %i\n",brickname,elementsize);
 
 
-    if (elementsize>0) {
-      parameter.size = elementsize;
-    } else {
-      if (numelements==1) {
-         parameter.size=datasize; 
+      if (elementsize>0) {
+        int offset = 0;
+        parameter.sizes=(short*)malloc(2*numelements);
+        parameter.offsets=(short*)malloc(2*numelements);
+
+        for (int i = 0;i<numelements;i++) {
+
+          unsigned short size=elementsize;
+          parameter.sizes[i]=size;
+          parameter.offsets[i]=offset;
+          offset+=size;
+        }
+
       } else {
         int offset = 0;
         parameter.sizes=(short*)malloc(2*numelements);
@@ -227,10 +257,13 @@ remake:
           parameter.offsets[i]=offset;
           offset+=size;
           p+=2;
-          //printf("%i\n",parameter.sizes[i]);
         }
       }
+
+    } else {
+      parameter.size=datasize/numelements;
     }
+
     vehicle.parameters[i]=parameter;
   }
 

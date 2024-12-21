@@ -65,11 +65,11 @@ remake:
         continue;
       }
       if (!strcmp(name,"Text")) {
-        printf("%i\n",brick->parameters[i].datasize);
+        printf("%i\n",brick->parameters[i].datasize-2);
         for (int j =0;j<brick->parameters[i].datasize;j++) {
-          printf("%c",((char*)brick->parameters->data)[j]);
+          printf("%c",((char*)brick->parameters[i].data)[j]);
         }
-        printf("d\n");
+        printf("\n");
       }
 
     }

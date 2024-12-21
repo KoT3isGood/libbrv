@@ -13,6 +13,7 @@ pub fn build(b: *std.Build) void {
     lib.addCSourceFiles(.{
         .files = &.{
             //
+            "source/brv.c",
             "source/parser.c",
             "source/analyzer.c",
             "source/builder.c",

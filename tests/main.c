@@ -2,10 +2,13 @@
 #include "stdlib.h"
 #include "../include/brv.h"
 
-
+const char* dynsizedprops[] = {
+  BR_DYNAMICALLY_SIZED_PROPERTIES
+};
 
 int main() {
 
+  libbrv_init(dynsizedprops,sizeof(dynsizedprops)/sizeof(char*));
   FILE* file = fopen("Vehicle.brv","rb");
   fseek(file,0,SEEK_END);
   unsigned int filesize=ftell(file);

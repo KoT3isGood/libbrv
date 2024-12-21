@@ -92,6 +92,7 @@ typedef struct {
 
 typedef void(*brv_analyze_callback)(const char*, int, void*);
 
+void libbrv_init(const char** dynamically_sized_properties, unsigned int num);
 // reads raw brv and gets all bricks and properties
 brv_vehicle brv_read(unsigned char* contents);
 
@@ -103,3 +104,13 @@ void brv_close(brv_vehicle vehicle);
 
 // returns brv from brv_vehicle
 void brv_build(brv_vehicle vehicle, unsigned int* size, unsigned char** data);
+
+
+
+#define BR_DYNAMICALLY_SIZED_PROPERTIES \
+"Text",\
+"BrickMaterial",\
+"InputChannelA.SourceBricks",\
+"InputChannelB.SourceBricks",\
+"InputChannel.SourceBricks",\
+"Operation"
