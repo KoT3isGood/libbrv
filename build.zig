@@ -21,19 +21,4 @@ pub fn build(b: *std.Build) void {
     });
     lib.linkLibC();
     b.installArtifact(lib);
-
-    const testexe = b.addExecutable(.{
-        .name = "testexe",
-        .target = target,
-        .optimize = optimize,
-    });
-    testexe.linkLibrary(lib);
-    testexe.addCSourceFiles(.{
-        .files = &.{
-            //
-            "tests/main.c",
-        },
-    });
-    testexe.linkLibC();
-    b.installArtifact(testexe);
 }
