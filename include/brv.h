@@ -52,11 +52,36 @@ typedef struct {
 } brv_brick_parameter;
 
 typedef struct brv_material {
+  char isactive;
+
   float color[3];
   float alpha;
   char* pattern;
   char* material;
 } material;
+
+typedef struct brv_input {
+  char isactive;
+  enum brv_input_modes {
+    BRV_INPUT_AXIS=0,
+    BRV_INPUT_SOURCE_BRICKS=1,
+    BRV_INPUT_VALUE=2,
+  };
+  int mode;
+
+  const char* inputaxis;
+  int numsourcebricks;
+  struct brv_brick** sourcebricks;
+  float value;
+} brv_input;
+
+typedef struct brv_output {
+  char isactive;
+  float minin;
+  float maxin;
+  float minout;
+  float maxout;
+} brv_output;
 
 typedef struct brv_brick {
   struct brv_brick* next;
@@ -67,7 +92,20 @@ typedef struct brv_brick {
 
   // materials
   struct brv_material material;
+
+  // inputs
+  brv_input input;
+
+  char* operation;
+  brv_input inputa;
+  brv_input inputb;
+
+  brv_output output;
+
+  char resettozero;
+
   // scalable bricks
+  char issizeactive;
   float size[3];
 
   float position[3];
@@ -90,14 +128,18 @@ typedef struct {
 
 } brv_vehicle;
 
-typedef void(*brv_analyze_callback)(const char*, int, void*);
+typedef void(*brv_serialize_callback)(const char*, int, void*);
+typedef void(*brv_deserialize_callback)(brv_brick_parameter*);
 
 void libbrv_init(const char** dynamically_sized_properties, unsigned int num);
 // reads raw brv and gets all bricks and properties
 brv_vehicle brv_read(unsigned char* contents);
 
 // converts properties into brick parameters
-void brv_analyze(brv_vehicle* vehicle, brv_analyze_callback callback); 
+void brv_deserialize(brv_vehicle* vehicle, brv_serialize_callback callback);
+
+// converts brick parameters to properties
+void brv_serialze(brv_vehicle* vehicle, brv_deserialize_callback callback); 
 
 // destroys vehicle
 void brv_close(brv_vehicle vehicle);
@@ -113,4 +155,15 @@ void brv_build(brv_vehicle vehicle, unsigned int* size, unsigned char** data);
 "InputChannelA.SourceBricks",\
 "InputChannelB.SourceBricks",\
 "InputChannel.SourceBricks",\
+"InputChannelA.InputAxis",\
+"InputChannelB.InputAxis",\
+"InputChannel.InputAxis",\
+"InputChannelA.Value",\
+"InputChannelB.Value",\
+"InputChannel.Value",\
+"OutputChannel.MaxIn",\
+"OutputChannel.MinIn",\
+"OutputChannel.MaxOut",\
+"OutputChannel.MinOut",\
+"bReturnToZero",\
 "Operation"

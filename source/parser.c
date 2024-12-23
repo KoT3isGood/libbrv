@@ -10,13 +10,6 @@ extern char** dsp;
 extern unsigned int numdsp;
 
 brv_vehicle brv_read(unsigned char* contents) {
-  if (!dsp) {
-    printf("failed to find dynamically sized properties\n");
-  }
-  if (!numdsp) {
-    printf("failed to find dynamically sized properties\n");
-  }
-
 
   brv_vehicle vehicle = {};
   vehicle.version = contents[0];
@@ -42,7 +35,6 @@ brv_vehicle brv_read(unsigned char* contents) {
 
 legacy:
   p=3;
-  printf("loading %i bricks\n",vehicle.numobjects);
   for (int i = 0;i<vehicle.numobjects;i++) {
     brv_brick* vbrick = (brv_brick*)malloc(sizeof(brv_brick));
 
@@ -201,7 +193,6 @@ remake:
   // reads properties
   // since each property element is unknown size we need to get offsets
   for (int i = 0;i<vehicle.numproperties;i++) {
-    printf("p: %i\n",p);
     brv_brick_parameter parameter;
     char bricklen = contents[p++];
     char* brickname = (char*)malloc(bricklen+1);
@@ -217,19 +208,11 @@ remake:
     memcpy(parameter.data,contents+p,datasize);
     p+=datasize;
 
-    char isdynamicallysized = 0;
-    for (int i = 0;i<numdsp;i++) {
-      if (!strcmp(dsp[i],brickname)) {
-        isdynamicallysized = 1;
-        break;
-      }
-    }
-    if(isdynamicallysized&&numelements>1) {
+    if(numelements>1) {
 
       unsigned short elementsize = (contents[p]<<0)+(contents[p+1]<<8);
       p+=2;
       parameter.size=0;
-      printf("g %s %i\n",brickname,elementsize);
 
 
       if (elementsize>0) {
@@ -261,7 +244,7 @@ remake:
       }
 
     } else {
-      parameter.size=datasize/numelements;
+      parameter.size=datasize;
     }
 
     vehicle.parameters[i]=parameter;
@@ -347,6 +330,8 @@ remake:
   vehicle.bricks = startingbrick;  
   return vehicle;
 };
+
+
 void brv_close(brv_vehicle vehicle) {
 
 };

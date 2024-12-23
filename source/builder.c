@@ -50,17 +50,9 @@ extern unsigned int numdsp;
 
 
 void brv_build(brv_vehicle vehicle, unsigned int* size, unsigned char** data) {
-  if (!dsp) {
-    printf("failed to find dynamically sized properties\n");
-  }
-  if (!numdsp) {
-    printf("failed to find dynamically sized properties\n");
-  }
-
 
   brv_class* startingclass=0;
   brv_class* currentclass=0;
-  printf("%p\n",currentclass);
   int numclasses=0;
   brv_brick_parameter2* startingparameters=0;
   brv_brick_parameter2* currentparameters=0;
@@ -106,7 +98,6 @@ void brv_build(brv_vehicle vehicle, unsigned int* size, unsigned char** data) {
 
         filesize+=strlen(brick->name)+1;
         numclasses++;
-        //printf("after adding %s: %i\n",brick->name,filesize);
       }
       genbrick->classid=foundid;
       genbrick->parameters = (struct brick_parameter*)malloc(4*brick->numparameters);
@@ -139,13 +130,7 @@ void brv_build(brv_vehicle vehicle, unsigned int* size, unsigned char** data) {
 
           param->datasize=0;
           param->numelements=0;
-          param->isparamsizeconstant=true;
-          for (int i = 0;i<numdsp;i++) {
-            if (!strcmp(dsp[i],param->name)) {
-              param->isparamsizeconstant=false;
-              break;
-            }
-          }
+
 
           if (currentparameters) {
             currentparameters->next = param;
@@ -154,7 +139,6 @@ void brv_build(brv_vehicle vehicle, unsigned int* size, unsigned char** data) {
             startingparameters = param;
             currentparameters=param;
           }
-          printf("huh?\n");
 
           numparams++;
 
@@ -182,7 +166,6 @@ void brv_build(brv_vehicle vehicle, unsigned int* size, unsigned char** data) {
         
         genbrick->parameters[i].paramid=foundid;
         if (found) {
-          //printf("found existing param data: %s\n",brick->parameters[i].name);
         } else {
           struct parameter* startingparam=param->startingparameters;
           struct parameter* currentparam=param->parameters;
@@ -202,20 +185,14 @@ void brv_build(brv_vehicle vehicle, unsigned int* size, unsigned char** data) {
           par->param=&brick->parameters[i];
           param->datasize+=par->param->datasize;
 
-          printf("ishallah we need new param data for %s: %i\n",brick->parameters[i].name,brick->parameters[i].datasize);
           
        
-          //printf("_ %i\n",filesize);
           filesize+=brick->parameters[i].datasize;
           param->numelements++;
           param->startingparameters = startingparam;
           param->parameters=currentparam;
-          if (!param->isparamsizeconstant) {
-            filesize+=2;
-          }
         }
       }
-      printf("-------------------------------\n");
 
 
       brick->position[0]*=100;
@@ -234,30 +211,30 @@ void brv_build(brv_vehicle vehicle, unsigned int* size, unsigned char** data) {
       filesize+=4*genbrick->numparameters;
 
     }
-    printf("before %i\n",filesize);
     for(brv_brick_parameter2* parameter = startingparameters;parameter;parameter=parameter->next) {
-      if (!parameter->isparamsizeconstant) {
         int size = 0;
-        bool canbeshorted=true;
-        for (struct parameter* param=parameter->startingparameters;param;param=param->next) {
-          if (size==0) {
-            size=param->param->datasize;
-            continue;
+        if (parameter->numelements!=1) {
+          bool canbeshorted=true;
+          for (struct parameter* param=parameter->startingparameters;param;param=param->next) {
+            if (size==0) {
+              size=param->param->datasize;
+              continue;
+            }
+            if (size!=param->param->datasize) {
+              canbeshorted=false;
+            };
           }
-          if (size!=param->param->datasize) {
-            canbeshorted=false;
-          };
+          if (canbeshorted) {
+            filesize+=2;
+            parameter->size=size;
+          } else {
+            filesize+=2+2*parameter->numelements;
+          }
+
         }
-        printf("canbeshorted %s %i\n",parameter->name,canbeshorted);
-        if (canbeshorted) {
-          filesize-=2*parameter->numelements-2;
-          parameter->size=size;
-        }
-      }
-    };
-    printf("after %i\n",filesize);
+            };
     // fixes vehicle corruption
-    filesize=ceil(filesize/16.0f)*16;
+    filesize=ceil(filesize/16.0f+2)*16;
     
     *data = (unsigned char*)malloc(filesize);
     
@@ -265,11 +242,23 @@ void brv_build(brv_vehicle vehicle, unsigned int* size, unsigned char** data) {
     unsigned char* d=*data;
     unsigned int p = 0;
     d[p++]=vehicle.version;
-    memcpy(&d[p],&vehicle.numobjects,2);
+    unsigned short numobjects=0;
+    unsigned short numclasses=0;
+    unsigned short numproperties=0;
+    for (brv_class* brick=startingclass;brick;brick=brick->next) {
+      numclasses++;
+    }
+    for (brv_brick* brick=vehicle.bricks;brick;brick=brick->next) {
+      numobjects++;
+    }
+    for (brv_brick_parameter2* parameter=startingparameters;parameter;parameter=parameter->next) {
+      numproperties++;
+    }
+    memcpy(&d[p],&numobjects,2);
     p+=2;
-    memcpy(&d[p],&vehicle.numclasses,2);
+    memcpy(&d[p],&numclasses,2);
     p+=2;
-    memcpy(&d[p],&vehicle.numproperties,2);
+    memcpy(&d[p],&numproperties,2);
     p+=2;
     for (brv_class* brick=startingclass;brick;brick=brick->next) {
       d[p++]=(char)strlen(brick->name);
@@ -336,11 +325,9 @@ void brv_build(brv_vehicle vehicle, unsigned int* size, unsigned char** data) {
       memcpy(&d[p], &brick->rotation,12);
       p+=12;
     }
-    printf("%i\n",p);
   }
   *size = filesize;
 
-  printf("%i\n",filesize);
 
   return;
 };
