@@ -1,0 +1,36 @@
+libbrv - a library to interact with Brick Rigs vehicles
+
+A simple library for parsing, modifying and generating .brv 
+(also known as Brick Rigs vehicle) files.
+
+1. Why was it created?
+After I've looked at blender brv plugin and BRCI I knew I would hate to work with them 
+because of python. First, it is slow. BRCI takes 2 seconds to generate 30k bricks. And 
+blender brv plugin takes 2 minutes to even load 10k bricks. So I've decided to make my 
+time worth, picked C because I don't know any other language and started working on 
+libbrv.
+
+2. Features
+- Ability to read and generate brv files from a bunch of parameters
+- Ability to create intermediate representation of the vehicle.
+- Speed, 0.04s to generate 30k bricks.
+
+3. Installation / Compilation
+First, make sure zig 0.13 is installed, haven't tested it on 0.14 yet. Then you can move 
+forward with the instruction. After you clone the repository and get into it, you can 
+type   zig build   in your terminal to compile the library. In the end you will get 
+working library inside of ./lib/ I guess.
+
+4. Quick start
+But the library was faster. You don't need to do anything except for linking and 
+including headers to make it work.
+
+5. Debugging and troubleshooting
+If you have any problems with vehicle parsing or generation make sure to send them in
+issues tab of the repo. Make sure to include snippet of code responsible for generation
+and .brv that you try to parse. 
+
+6. Contributing
+Every defenition should be lower case. Global functions and variables should have brv_
+prefix. Commit names should be self-explainatory. Pull requests should contain issue id 
+if it fixes it.
