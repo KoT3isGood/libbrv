@@ -45,8 +45,6 @@ typedef struct brv_brick2 {
 } brv_brick2;
 
 
-extern char** dsp;
-extern unsigned int numdsp;
 
 
 void brv_build(brv_vehicle vehicle, unsigned int* size, unsigned char** data) {

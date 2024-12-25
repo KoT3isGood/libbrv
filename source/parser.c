@@ -6,9 +6,6 @@
 #include "ctype.h"
 
 
-extern char** dsp;
-extern unsigned int numdsp;
-
 brv_vehicle brv_read(unsigned char* contents) {
 
   brv_vehicle vehicle = {};

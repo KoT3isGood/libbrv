@@ -87,16 +87,15 @@ void brv_serialze(brv_vehicle* vehicle, brv_deserialize_callback callback) {
       numparams++;
     }
 
-    if (brick->input.isactive) {
+    if (brick->type&BRV_TYPE_SWITCH) {
       numparams++;
-      if (brick->input.mode==BRV_INPUT_VALUE) {
+      if (brick->input.mode!=BRV_INPUT_AXIS) {
         numparams++;
       }
-      if (brick->input.mode==BRV_INPUT_SOURCE_BRICKS) {
-        numparams++;
-      }
+      numparams+=5;  
     }
-    if (brick->inputa.isactive) {
+
+    if (brick->type&BRV_TYPE_MATH_BRICK) {
       numparams++;
       if (brick->inputa.mode==BRV_INPUT_VALUE) {
         numparams++;
@@ -104,8 +103,6 @@ void brv_serialze(brv_vehicle* vehicle, brv_deserialize_callback callback) {
       if (brick->inputa.mode==BRV_INPUT_SOURCE_BRICKS) {
         numparams++;
       }
-    }
-    if (brick->inputb.isactive) {
       numparams++;
       if (brick->inputb.mode==BRV_INPUT_VALUE) {
         numparams++;
@@ -114,22 +111,18 @@ void brv_serialze(brv_vehicle* vehicle, brv_deserialize_callback callback) {
         numparams++;
       }
     }
-    if(brick->issizeactive) {
+
+    if(brick->type&BRV_TYPE_SCALABLE_BRICK) {
       numparams++;
     }
-
-    if (brick->output.isactive) {
-      numparams+=4;  
-    }
-    // reset to zero
-    numparams++;
 
     brick->numparameters=numparams;
     brick->parameters = (brv_brick_parameter*)malloc(sizeof(brv_brick_parameter)*numparams);
 
     int i=0;
 
-    if (brick->issizeactive) {
+    // scalable bricks
+    if (brick->type&BRV_TYPE_SCALABLE_BRICK) {
       brick->parameters[i].name="BrickSize";
       brick->parameters[i].datasize=12;
       brick->parameters[i].data=malloc(12);
@@ -137,7 +130,21 @@ void brv_serialze(brv_vehicle* vehicle, brv_deserialize_callback callback) {
       i++;
     }
 
-    if (brick->output.isactive) {
+    //
+    if (brick->type) {
+      
+    }
+
+
+    if (brick->type&BRV_TYPE_SWITCH) {
+      // return to zero
+      brick->parameters[i].name="bReturnToZero";
+      brick->parameters[i].datasize=1;
+      brick->parameters[i].data=malloc(1);
+      memcpy(brick->parameters[i].data,&brick->resettozero,1);
+      i++;
+
+      // output channel
       brick->parameters[i].name="OutputChannel.MaxIn";
       brick->parameters[i].datasize=4;
       brick->parameters[i].data=malloc(4);
@@ -159,27 +166,69 @@ void brv_serialze(brv_vehicle* vehicle, brv_deserialize_callback callback) {
       memcpy(brick->parameters[i].data,&brick->output.minout,4);
       i++;
 
+
+      // input axis
+      brick->parameters[i].name="InputChannel.InputAxis";
+      if (brick->input.mode==BRV_INPUT_VALUE) {
+        const char* value = "AlwaysOn";
+        brick->parameters[i].datasize=strlen(value)+1;
+        brick->parameters[i].data=malloc(strlen(value)+1);
+        ((char*)brick->parameters[i].data)[0]=strlen(value);
+        memcpy(brick->parameters[i].data+1,value,strlen(value));
+      } else
+      if (brick->input.mode==BRV_INPUT_SOURCE_BRICKS) {
+        const char* value = "Custom";
+        brick->parameters[i].datasize=strlen(value)+1;
+        brick->parameters[i].data=malloc(strlen(value)+1);
+        ((char*)brick->parameters[i].data)[0]=strlen(value);
+        memcpy(brick->parameters[i].data+1,value,strlen(value));
+      } else {
+        const char* value = brick->inputa.inputaxis;
+        brick->parameters[i].datasize=strlen(value)+1;
+        brick->parameters[i].data=malloc(strlen(value)+1);
+        ((char*)brick->parameters[i].data)[0]=strlen(value);
+        memcpy(brick->parameters[i].data+1,value,strlen(value));      
+      }
+      switch (brick->input.mode) {
+        case BRV_INPUT_VALUE:
+          i++;
+          brick->parameters[i].name="InputChannel.Value";
+          brick->parameters[i].datasize=4;
+          brick->parameters[i].data=malloc(4);
+          memcpy(brick->parameters[i].data,&brick->input.value,4);break;
+        case BRV_INPUT_SOURCE_BRICKS:
+          i++;
+          brick->parameters[i].name="InputChannel.SourceBricks";
+          brick->parameters[i].datasize=2+2*brick->input.numsourcebricks;
+          brick->parameters[i].data=malloc(brick->parameters[i].datasize);
+
+          memcpy(brick->parameters[i].data,&brick->input.numsourcebricks,2);
+          for (int j=0;j<brick->input.numsourcebricks;j++) {
+            int foundid=1;
+            char found=0;
+            for (brv_brick* brick2=vehicle->bricks;brick2;brick2=brick2->next) {
+              if (brick2==brick->input.sourcebricks[j]) {
+                found=1;
+                break;
+              }
+              foundid++;
+            }
+            if (found==0) {
+              printf("failed to find brick %p",&brick->input.sourcebricks[j]);
+            }
+            memcpy(brick->parameters[i].data+2+2*j,&foundid,2);
+          }
+          break;
+
+      }
+      i++;
     }
 
-      brick->parameters[i].name="bReturnToZero";
-      brick->parameters[i].datasize=1;
-      brick->parameters[i].data=malloc(1);
-      memcpy(brick->parameters[i].data,&brick->resettozero,1);
-      i++;
 
 
 
-
-
-
-
-
-
-
-
-
-    if (brick->operation) {
-
+    if (brick->type&BRV_TYPE_MATH_BRICK) {
+      // operator
       brick->parameters[i].name="Operation";
       char* value;
       if (!strcmp(brick->operation,"+")) {
@@ -265,82 +314,17 @@ void brv_serialze(brv_vehicle* vehicle, brv_deserialize_callback callback) {
       }     
       else if (!strcmp(brick->operation,"atan")) {
         value="Atan";
-      }              
+      } else {
+        value="Add";
+      }        
       brick->parameters[i].datasize=strlen(value)+1;
       brick->parameters[i].data=malloc(strlen(value)+1);
       ((char*)brick->parameters[i].data)[0]=strlen(value);
-      memcpy(brick->parameters[i].data+1,value,strlen(value));
-
-
-
+      memcpy(brick->parameters[i].data+1,value,strlen(value)); 
+      i++;
       
-      i++;
-    }
-
-
-
-    if (brick->input.isactive) {
-      brick->parameters[i].name="InputChannel.InputAxis";
-
-      if (brick->input.mode==BRV_INPUT_VALUE) {
-        const char* value = "AlwaysOn";
-        brick->parameters[i].datasize=strlen(value)+1;
-        brick->parameters[i].data=malloc(strlen(value)+1);
-        ((char*)brick->parameters[i].data)[0]=strlen(value);
-        memcpy(brick->parameters[i].data+1,value,strlen(value));
-      } else
-      if (brick->input.mode==BRV_INPUT_SOURCE_BRICKS) {
-        const char* value = "Custom";
-        brick->parameters[i].datasize=strlen(value)+1;
-        brick->parameters[i].data=malloc(strlen(value)+1);
-        ((char*)brick->parameters[i].data)[0]=strlen(value);
-        memcpy(brick->parameters[i].data+1,value,strlen(value));
-      } else {
-        const char* value = brick->inputa.inputaxis;
-        brick->parameters[i].datasize=strlen(value)+1;
-        brick->parameters[i].data=malloc(strlen(value)+1);
-        ((char*)brick->parameters[i].data)[0]=strlen(value);
-        memcpy(brick->parameters[i].data+1,value,strlen(value));      
-      }
-
-
-      switch (brick->input.mode) {
-        case BRV_INPUT_VALUE:
-          i++;
-          brick->parameters[i].name="InputChannel.Value";
-          brick->parameters[i].datasize=4;
-          brick->parameters[i].data=malloc(4);
-          memcpy(brick->parameters[i].data,&brick->input.value,4);break;
-        case BRV_INPUT_SOURCE_BRICKS:
-          i++;
-          brick->parameters[i].name="InputChannel.SourceBricks";
-          brick->parameters[i].datasize=2+2*brick->input.numsourcebricks;
-          brick->parameters[i].data=malloc(brick->parameters[i].datasize);
-
-          memcpy(brick->parameters[i].data,&brick->input.numsourcebricks,2);
-          for (int j=0;j<brick->input.numsourcebricks;j++) {
-            int foundid=1;
-            char found=0;
-            for (brv_brick* brick2=vehicle->bricks;brick2;brick2=brick2->next) {
-              if (brick2==brick->input.sourcebricks[j]) {
-                found=1;
-                break;
-              }
-              foundid++;
-            }
-            if (found==0) {
-              printf("failed to find brick %p",&brick->input.sourcebricks[j]);
-            }
-            memcpy(brick->parameters[i].data+2+2*j,&foundid,2);
-          }
-          break;
-
-      }
-      i++;
-    }
-    if (brick->inputa.isactive) {
+      // input channel a
       brick->parameters[i].name="InputChannelA.InputAxis";
-
       if (brick->inputa.mode==BRV_INPUT_VALUE) {
         const char* value = "AlwaysOn";
         brick->parameters[i].datasize=strlen(value)+1;
@@ -398,67 +382,66 @@ void brv_serialze(brv_vehicle* vehicle, brv_deserialize_callback callback) {
       i++;
       
     }
-    if (brick->inputb.isactive) {
-      brick->parameters[i].name="InputChannelB.InputAxis";
 
-      if (brick->inputb.mode==BRV_INPUT_VALUE) {
-        const char* value = "AlwaysOn";
-        brick->parameters[i].datasize=strlen(value)+1;
-        brick->parameters[i].data=malloc(strlen(value)+1);
-        ((char*)brick->parameters[i].data)[0]=strlen(value);
-        memcpy(brick->parameters[i].data+1,value,strlen(value));
-      } else
-      if (brick->inputb.mode==BRV_INPUT_SOURCE_BRICKS) {
-        const char* value = "Custom";
-        brick->parameters[i].datasize=strlen(value)+1;
-        brick->parameters[i].data=malloc(strlen(value)+1);
-        ((char*)brick->parameters[i].data)[0]=strlen(value);
-        memcpy(brick->parameters[i].data+1,value,strlen(value));
-      } else {
-        const char* value = brick->inputa.inputaxis;
-        brick->parameters[i].datasize=strlen(value)+1;
-        brick->parameters[i].data=malloc(strlen(value)+1);
-        ((char*)brick->parameters[i].data)[0]=strlen(value);
-        memcpy(brick->parameters[i].data+1,value,strlen(value));    
-      }
+    // input channel b
+    brick->parameters[i].name="InputChannelB.InputAxis";
+
+    if (brick->inputb.mode==BRV_INPUT_VALUE) {
+      const char* value = "AlwaysOn";
+      brick->parameters[i].datasize=strlen(value)+1;
+      brick->parameters[i].data=malloc(strlen(value)+1);
+      ((char*)brick->parameters[i].data)[0]=strlen(value);
+      memcpy(brick->parameters[i].data+1,value,strlen(value));
+    } else
+    if (brick->inputb.mode==BRV_INPUT_SOURCE_BRICKS) {
+      const char* value = "Custom";
+      brick->parameters[i].datasize=strlen(value)+1;
+      brick->parameters[i].data=malloc(strlen(value)+1);
+      ((char*)brick->parameters[i].data)[0]=strlen(value);
+      memcpy(brick->parameters[i].data+1,value,strlen(value));
+    } else {
+      const char* value = brick->inputa.inputaxis;
+      brick->parameters[i].datasize=strlen(value)+1;
+      brick->parameters[i].data=malloc(strlen(value)+1);
+      ((char*)brick->parameters[i].data)[0]=strlen(value);
+      memcpy(brick->parameters[i].data+1,value,strlen(value));    
+    }
 
 
-      switch (brick->inputb.mode) {
-        case BRV_INPUT_VALUE:
-          i++;
-          brick->parameters[i].name="InputChannelB.Value";
-          brick->parameters[i].datasize=4;
-          brick->parameters[i].data=malloc(4);
-          memcpy(brick->parameters[i].data,&brick->inputb.value,4);
-          break;
-        case BRV_INPUT_SOURCE_BRICKS:
-          i++;
-          brick->parameters[i].name="InputChannelB.SourceBricks";
-          brick->parameters[i].datasize=2+2*brick->inputb.numsourcebricks;
-          brick->parameters[i].data=malloc(brick->parameters[i].datasize);
+    switch (brick->inputb.mode) {
+      case BRV_INPUT_VALUE:
+        i++;
+        brick->parameters[i].name="InputChannelB.Value";
+        brick->parameters[i].datasize=4;
+        brick->parameters[i].data=malloc(4);
+        memcpy(brick->parameters[i].data,&brick->inputb.value,4);
+        break;
+      case BRV_INPUT_SOURCE_BRICKS:
+        i++;
+        brick->parameters[i].name="InputChannelB.SourceBricks";
+        brick->parameters[i].datasize=2+2*brick->inputb.numsourcebricks;
+        brick->parameters[i].data=malloc(brick->parameters[i].datasize);
 
-          memcpy(brick->parameters[i].data,&brick->inputb.numsourcebricks,2);
-          for (int j=0;j<brick->inputb.numsourcebricks;j++) {
-            int foundid=1;
-            char found=0;
-            for (brv_brick* brick2=vehicle->bricks;brick2;brick2=brick2->next) {
-              if (brick2==brick->inputb.sourcebricks[j]) {
-                found=1;
-                break;
-              }
-              foundid++;
+        memcpy(brick->parameters[i].data,&brick->inputb.numsourcebricks,2);
+        for (int j=0;j<brick->inputb.numsourcebricks;j++) {
+          int foundid=1;
+          char found=0;
+          for (brv_brick* brick2=vehicle->bricks;brick2;brick2=brick2->next) {
+            if (brick2==brick->inputb.sourcebricks[j]) {
+              found=1;
+              break;
             }
-            if (found==0) {
-              printf("failed to find brick %p",&brick->inputb.sourcebricks[j]);
-            }
-            memcpy(brick->parameters[i].data+2+2*j,&foundid,2);
+            foundid++;
           }
-          break;
-
-      }
-      i++;
+          if (found==0) {
+            printf("failed to find brick %p",&brick->inputb.sourcebricks[j]);
+          }
+          memcpy(brick->parameters[i].data+2+2*j,&foundid,2);
+        }
+        break;
 
     }
+    i++;  
 
   }
 }; 

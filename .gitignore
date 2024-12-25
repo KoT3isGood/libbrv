@@ -1,4 +1,8 @@
 /.zig-cache/
 /lib/
+/bin/
+/examples/bindings.zip
+/examples/bindings/libbrv.so
+/examples/bindings/brv.dll
 /.git/
 /zig-out/

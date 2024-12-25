@@ -52,8 +52,6 @@ typedef struct {
 } brv_brick_parameter;
 
 typedef struct brv_material {
-  char isactive;
-
   float color[3];
   float alpha;
   char* pattern;
@@ -61,7 +59,6 @@ typedef struct brv_material {
 } material;
 
 typedef struct brv_input {
-  char isactive;
   enum brv_input_modes {
     BRV_INPUT_AXIS=0,
     BRV_INPUT_SOURCE_BRICKS=1,
@@ -76,7 +73,6 @@ typedef struct brv_input {
 } brv_input;
 
 typedef struct brv_output {
-  char isactive;
   float minin;
   float maxin;
   float minout;
@@ -87,25 +83,30 @@ typedef struct brv_brick {
   struct brv_brick* next;
   char* name;
 
+  enum brv_brick_type {
+    BRV_TYPE_SCALABLE_BRICK=1,
+    BRV_TYPE_SWITCH=2,
+    BRV_TYPE_MATH_BRICK=4,
+  };
+  int type;
+
   unsigned char numparameters;
   brv_brick_parameter* parameters;
 
   // materials
   struct brv_material material;
 
-  // inputs
+  // for switches
   brv_input input;
+  brv_output output;
+  char resettozero;
 
+  // math bricks
   char* operation;
   brv_input inputa;
   brv_input inputb;
 
-  brv_output output;
-
-  char resettozero;
-
-  // scalable bricks
-  char issizeactive;
+  // scalable bricks, wheels, displays etc.
   float size[3];
 
   float position[3];
@@ -115,10 +116,10 @@ typedef struct brv_brick {
 
 
 typedef struct {
-  char version;
-  short numobjects; 
-  short numclasses; 
-  short numproperties;
+  unsigned char version;
+  unsigned short numobjects; 
+  unsigned short numclasses; 
+  unsigned short numproperties;
 
   // intermediate information from BR_SAVE_INTERFACE_VERSION+ 
   char** classes;
