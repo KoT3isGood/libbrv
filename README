@@ -12,6 +12,7 @@ After I've looked at blender brv plugin and BRCI I knew I would hate to work wit
 
 3. Installation / Compilation
 First, make sure zig 0.13 is installed, haven't tested it on 0.14 yet. Then you can move forward with the instruction. After you clone the repository and get into it, you can type   zig build   in your terminal to compile the library. In the end you will get working library inside of ./lib/ I guess.
+If your iPad can't run zig for some reason you can compile this library by running build.sh. I do it by myself when I have no electricity. Might be not upto date.
 
 4. Quick start
 But the library was faster. You don't need to do anything except for linking and including headers to make it work.
