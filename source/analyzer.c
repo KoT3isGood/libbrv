@@ -59,19 +59,67 @@ remake:
       char* name = brick->parameters[i].name;
       unsigned char* contents = brick->parameters[i].data;
       if (!strcmp(name,"BrickSize")) {
+        brick->type|=BRV_TYPE_SCALABLE_BRICK;
         brick->size[0]=contents[0];
         brick->size[1]=contents[1];
         brick->size[2]=contents[2];
         continue;
       }
       if (!strcmp(name,"Text")) {
-        printf("%i\n",brick->parameters[i].datasize-2);
-        for (int j =0;j<brick->parameters[i].datasize;j++) {
-          printf("%c",((char*)brick->parameters[i].data)[j]);
-        }
-        printf("\n");
+        brick->type|=BRV_TYPE_TEXT;
+        char* text = (char*)malloc(contents[0]);
+        memcpy(text,&contents[2],contents[0]);
+        brick->text=text;
       }
-
+      if (!strcmp(name, "InputChannel")) {
+        brick->type|=BRV_TYPE_INPUT;
+        int a = 0;
+        int numinputs=contents[0]+contents[1];
+        brick->input.numsourcebricks=numinputs;
+        brick->input.sourcebricks=(brv_brick*)malloc(sizeof(brv_brick*)*numinputs);
+        for (int j = 0;j<numinputs;j++) {
+          int brickid=contents[2+j]+contents[3+j*2];
+          for (brv_brick* brick2=vehicle->bricks;brick2;brick2=brick2->next) {
+            if (++a==brickid) {
+              brick->input.sourcebricks[0]=brick2;
+              break;
+            };
+          }
+        }
+      }
+      if (!strcmp(name, "InputChannelA")) {      
+        brick->type|=BRV_TYPE_MATH_BRICK;         
+        int a = 0;                                        
+        int numinputs=contents[0]+contents[1];
+        brick->inputa.numsourcebricks=numinputs;
+        brick->inputa.sourcebricks=(brv_brick*)malloc(sizeof(brv_brick*)*numinputs);
+        for (int j = 0;j<numinputs;j++) {
+          int brickid=contents[2+j]+contents[3+j*2];
+          for (brv_brick* brick2=vehicle->bricks;brick2;brick2=brick2->next){
+            if (++a==brickid) {   
+              brick->inputa.sourcebricks[0]=brick2;
+              break;                                         
+            };   
+          }
+        }                              
+      }          
+      if (!strcmp(name, "InputChannelB")) {      
+        brick->type|=BRV_TYPE_MATH_BRICK;         
+        int a = 0;                                        
+        int numinputs=contents[0]+contents[1];
+        brick->inputb.numsourcebricks=numinputs;
+        brick->inputb.sourcebricks=(brv_brick*)malloc(sizeof(brv_brick*)*numinputs);
+        for (int j = 0;j<numinputs;j++) {
+          int brickid=contents[2+j]+contents[3+j*2];
+          for (brv_brick* brick2=vehicle->bricks;brick2;brick2=brick2->next){
+            if (++a==brickid) {   
+              brick->inputb.sourcebricks[0]=brick2;
+              break;                                         
+            };   
+          }
+        }                              
+      }          
+       
     }
   }
 
@@ -87,7 +135,7 @@ void brv_serialze(brv_vehicle* vehicle, brv_deserialize_callback callback) {
       numparams++;
     }
 
-    if (brick->type&BRV_TYPE_SWITCH) {
+    if (brick->type&BRV_TYPE_INPUT) {
       numparams++;
       if (brick->input.mode!=BRV_INPUT_AXIS) {
         numparams++;
@@ -136,7 +184,7 @@ void brv_serialze(brv_vehicle* vehicle, brv_deserialize_callback callback) {
     }
 
 
-    if (brick->type&BRV_TYPE_SWITCH) {
+    if (brick->type&BRV_TYPE_INPUT) {
       // return to zero
       brick->parameters[i].name="bReturnToZero";
       brick->parameters[i].datasize=1;

@@ -85,8 +85,9 @@ typedef struct brv_brick {
 
   enum brv_brick_type {
     BRV_TYPE_SCALABLE_BRICK=1,
-    BRV_TYPE_SWITCH=2,
+    BRV_TYPE_INPUT=2,
     BRV_TYPE_MATH_BRICK=4,
+    BRV_TYPE_TEXT=8,
   };
   int type;
 
@@ -105,6 +106,9 @@ typedef struct brv_brick {
   char* operation;
   brv_input inputa;
   brv_input inputb;
+
+  // text bricks
+  char* text;
 
   // scalable bricks, wheels, displays etc.
   float size[3];
