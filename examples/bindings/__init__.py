@@ -85,7 +85,10 @@ class brv_vehicle(Structure):
 
 
 addon_path = os.path.dirname(__file__)
-lib = CDLL(os.path.join(addon_path,"libbrv.so"))
+if os.name=="posix":
+    lib = CDLL(os.path.join(addon_path,"libbrv.so"))
+if os.name=="nt":
+    lib = CDLL(os.path.join(addon_path,"brv.dll"))
 lib.brv_read.argtypes = [POINTER(c_ubyte)]
 lib.brv_read.restype = brv_vehicle
 print(lib)
@@ -107,16 +110,11 @@ def import_new_brick(name):
     return imported_object
 
 def create_instance(name):
-    start_time = time.time()
     instance = bpy.data.objects.new(name=name, object_data=loaded_bricks[name].data)
     bpy.context.scene.collection.objects.link(instance)
-
-
-    print(time.time()-start_time,"ms")
     return instance
 
 def getBrick(name):
-
     if name in loaded_bricks:
         return create_instance(name)
     else:
@@ -129,7 +127,7 @@ def read_brv(self, context, filepath):
         content = file.read()
     vehicle = lib.brv_read(cast(content, POINTER(c_ubyte)))
     lib.brv_deserialize(pointer(vehicle),None)
-    print(vehicle.version)
+    print("brv version:",vehicle.version)
 
 
     loaded_bricks.clear()
