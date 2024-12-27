@@ -153,22 +153,3 @@ void brv_close(brv_vehicle vehicle);
 void brv_build(brv_vehicle vehicle, unsigned int* size, unsigned char** data);
 
 
-
-#define BR_DYNAMICALLY_SIZED_PROPERTIES \
-"Text",\
-"BrickMaterial",\
-"InputChannelA.SourceBricks",\
-"InputChannelB.SourceBricks",\
-"InputChannel.SourceBricks",\
-"InputChannelA.InputAxis",\
-"InputChannelB.InputAxis",\
-"InputChannel.InputAxis",\
-"InputChannelA.Value",\
-"InputChannelB.Value",\
-"InputChannel.Value",\
-"OutputChannel.MaxIn",\
-"OutputChannel.MinIn",\
-"OutputChannel.MaxOut",\
-"OutputChannel.MinOut",\
-"bReturnToZero",\
-"Operation"

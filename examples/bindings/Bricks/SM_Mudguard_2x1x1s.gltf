@@ -1,0 +1,112 @@
+{
+  "asset" : {
+    "generator" : "UE Viewer (umodel) build 1590",
+    "version" : "2.0"
+  },
+  "scene" : 0,
+  "scenes" : [
+    {
+      "nodes" : [ 0 ]
+    }
+  ],
+  "nodes" : [
+    {
+      "name" : "SM_Mudguard_2x1x1s",
+      "mesh" : 0
+    }
+  ],
+  "materials" : [
+    {
+      "name" : "M_Brick",
+      "pbrMetallicRoughness" : {
+        "baseColorFactor" : [ 0.3, 0.3, 0.3, 1.0 ],
+        "metallicFactor" : 0.1,
+        "roughnessFactor" : 0.5
+      }
+    }
+  ],
+  "meshes" : [
+    {
+      "primitives" : [
+        {
+          "attributes" : {
+            "POSITION" : 1,
+            "NORMAL" : 2,
+            "TANGENT" : 3,
+            "TEXCOORD_0" : 4
+          },
+          "indices" : 0,
+          "material" : 0
+        }
+      ],
+      "name" : "SM_Mudguard_2x1x1s"
+    }
+  ],
+  "buffers" : [
+    {
+      "uri" : "SM_Mudguard_2x1x1s.bin",
+      "byteLength" : 20796
+    }
+  ],
+  "bufferViews" : [
+    {
+      "buffer" : 0,
+      "byteOffset" : 0,
+      "byteLength" : 2076
+    },
+    {
+      "buffer" : 0,
+      "byteOffset" : 2076,
+      "byteLength" : 4680
+    },
+    {
+      "buffer" : 0,
+      "byteOffset" : 6756,
+      "byteLength" : 4680
+    },
+    {
+      "buffer" : 0,
+      "byteOffset" : 11436,
+      "byteLength" : 6240
+    },
+    {
+      "buffer" : 0,
+      "byteOffset" : 17676,
+      "byteLength" : 3120
+    }
+  ],
+  "accessors" : [
+    {
+      "bufferView" : 0,
+      "componentType" : 5123,
+      "count" : 1038,
+      "type" : "SCALAR"
+    },
+    {
+      "bufferView" : 1,
+      "min" : [ -0.5445, -7.08843e-08, -0.5 ],
+      "max" : [ 0.5445, 0.495, 0.15 ],
+      "componentType" : 5126,
+      "count" : 390,
+      "type" : "VEC3"
+    },
+    {
+      "bufferView" : 2,
+      "componentType" : 5126,
+      "count" : 390,
+      "type" : "VEC3"
+    },
+    {
+      "bufferView" : 3,
+      "componentType" : 5126,
+      "count" : 390,
+      "type" : "VEC4"
+    },
+    {
+      "bufferView" : 4,
+      "componentType" : 5126,
+      "count" : 390,
+      "type" : "VEC2"
+    }
+  ]
+}

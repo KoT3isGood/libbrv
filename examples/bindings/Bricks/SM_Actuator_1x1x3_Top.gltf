@@ -1,0 +1,187 @@
+{
+  "asset" : {
+    "generator" : "UE Viewer (umodel) build 1590",
+    "version" : "2.0"
+  },
+  "scene" : 0,
+  "scenes" : [
+    {
+      "nodes" : [ 0 ]
+    }
+  ],
+  "nodes" : [
+    {
+      "name" : "SM_Actuator_1x1x3_Top",
+      "mesh" : 0
+    }
+  ],
+  "materials" : [
+    {
+      "name" : "M_Brick",
+      "pbrMetallicRoughness" : {
+        "baseColorFactor" : [ 0.3, 0.3, 0.3, 1.0 ],
+        "metallicFactor" : 0.1,
+        "roughnessFactor" : 0.5
+      }
+    },
+    {
+      "name" : "M_Brick_Chrome",
+      "pbrMetallicRoughness" : {
+        "baseColorFactor" : [ 0.9, 0.3, 0.3, 1.0 ],
+        "metallicFactor" : 0.1,
+        "roughnessFactor" : 0.5
+      }
+    }
+  ],
+  "meshes" : [
+    {
+      "primitives" : [
+        {
+          "attributes" : {
+            "POSITION" : 1,
+            "NORMAL" : 2,
+            "TANGENT" : 3,
+            "TEXCOORD_0" : 4
+          },
+          "indices" : 0,
+          "material" : 0
+        },
+        {
+          "attributes" : {
+            "POSITION" : 6,
+            "NORMAL" : 7,
+            "TANGENT" : 8,
+            "TEXCOORD_0" : 9
+          },
+          "indices" : 5,
+          "material" : 1
+        }
+      ],
+      "name" : "SM_Actuator_1x1x3_Top"
+    }
+  ],
+  "buffers" : [
+    {
+      "uri" : "SM_Actuator_1x1x3_Top.bin",
+      "byteLength" : 9756
+    }
+  ],
+  "bufferViews" : [
+    {
+      "buffer" : 0,
+      "byteOffset" : 0,
+      "byteLength" : 744
+    },
+    {
+      "buffer" : 0,
+      "byteOffset" : 744,
+      "byteLength" : 1584
+    },
+    {
+      "buffer" : 0,
+      "byteOffset" : 2328,
+      "byteLength" : 1584
+    },
+    {
+      "buffer" : 0,
+      "byteOffset" : 3912,
+      "byteLength" : 2112
+    },
+    {
+      "buffer" : 0,
+      "byteOffset" : 6024,
+      "byteLength" : 1056
+    },
+    {
+      "buffer" : 0,
+      "byteOffset" : 7080,
+      "byteLength" : 276
+    },
+    {
+      "buffer" : 0,
+      "byteOffset" : 7356,
+      "byteLength" : 600
+    },
+    {
+      "buffer" : 0,
+      "byteOffset" : 7956,
+      "byteLength" : 600
+    },
+    {
+      "buffer" : 0,
+      "byteOffset" : 8556,
+      "byteLength" : 800
+    },
+    {
+      "buffer" : 0,
+      "byteOffset" : 9356,
+      "byteLength" : 400
+    }
+  ],
+  "accessors" : [
+    {
+      "bufferView" : 0,
+      "componentType" : 5123,
+      "count" : 372,
+      "type" : "SCALAR"
+    },
+    {
+      "bufferView" : 1,
+      "min" : [ -0.15, -2.44381e-08, -0.15 ],
+      "max" : [ 0.15, 0.15, 0.15 ],
+      "componentType" : 5126,
+      "count" : 132,
+      "type" : "VEC3"
+    },
+    {
+      "bufferView" : 2,
+      "componentType" : 5126,
+      "count" : 132,
+      "type" : "VEC3"
+    },
+    {
+      "bufferView" : 3,
+      "componentType" : 5126,
+      "count" : 132,
+      "type" : "VEC4"
+    },
+    {
+      "bufferView" : 4,
+      "componentType" : 5126,
+      "count" : 132,
+      "type" : "VEC2"
+    },
+    {
+      "bufferView" : 5,
+      "componentType" : 5123,
+      "count" : 138,
+      "type" : "SCALAR"
+    },
+    {
+      "bufferView" : 6,
+      "min" : [ -0.105, -0.7, -0.105 ],
+      "max" : [ 0.105, 1.71067e-08, 0.105 ],
+      "componentType" : 5126,
+      "count" : 50,
+      "type" : "VEC3"
+    },
+    {
+      "bufferView" : 7,
+      "componentType" : 5126,
+      "count" : 50,
+      "type" : "VEC3"
+    },
+    {
+      "bufferView" : 8,
+      "componentType" : 5126,
+      "count" : 50,
+      "type" : "VEC4"
+    },
+    {
+      "bufferView" : 9,
+      "componentType" : 5126,
+      "count" : 50,
+      "type" : "VEC2"
+    }
+  ]
+}

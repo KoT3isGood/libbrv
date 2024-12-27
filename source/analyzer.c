@@ -44,7 +44,6 @@ legacy:
         brick->size[0]=contents[0];
         brick->size[1]=contents[1];
         brick->size[2]=contents[2];
-        //printf("size: %f,%f,%f\n",brick->size[0],brick->size[1],brick->size[2]);
         continue;
       }
       // TODO: implement the rest of the stuff
@@ -60,9 +59,23 @@ remake:
       unsigned char* contents = brick->parameters[i].data;
       if (!strcmp(name,"BrickSize")) {
         brick->type|=BRV_TYPE_SCALABLE_BRICK;
+        if (vehicle->version<BR_SAVE_BRICK_UNITS_FLOAT_VERSION) {
         brick->size[0]=contents[0];
         brick->size[1]=contents[1];
         brick->size[2]=contents[2];
+        } else {
+          unsigned int x1 = (contents[0]<<0)+(contents[1]<<8)+((unsigned int)contents[2]<<16)+((unsigned int)contents[3]<<24);
+          float x = *(float*)&x1/100.0;
+          unsigned int y1 = (contents[4]<<0)+(contents[5]<<8)+((unsigned int)contents[6]<<16)+((unsigned int)contents[7]<<24);
+          float y = *(float*)&y1/100.0;
+          unsigned int z1 = (contents[8]<<0)+(contents[9]<<8)+((unsigned int)contents[10]<<16)+((unsigned int)contents[11]<<24);
+          float z = *(float*)&z1/100.0;
+          
+          brick->size[0]=x*33.33333333333;
+          brick->size[1]=y*33.33333333333;
+          brick->size[2]=z*33.33333333333;
+
+        }
         continue;
       }
       if (!strcmp(name,"Text")) {

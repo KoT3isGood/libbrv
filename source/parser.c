@@ -136,11 +136,11 @@ bricktraverse_legacy:
     // kotofyt: not sure where it is used since v6 uses v3's
     if (vehicle.version!=BR_SAVE_SMALLER_STEPS_VERSION) {
       short x = contents[p+0]+256*contents[p+1];
-      brick->position[0] = x/100;
+      brick->position[0] = x/100.0;
       short y = contents[p+2]+256*contents[p+3];
-      brick->position[1] = y/100;
+      brick->position[1] = y/100.0;
       short z = contents[p+4]+256*contents[p+5];
-      brick->position[2] = z/100;
+      brick->position[2] = z/100.0;
 
       char rotx = contents[p+6];
       brick->rotation[0]=rotx;
@@ -288,13 +288,13 @@ remake:
 
     // position and rotation
     unsigned int x1 = (contents[p]<<0)+(contents[p+1]<<8)+((unsigned int)contents[p+2]<<16)+((unsigned int)contents[p+3]<<24);
-    float x = *(float*)&x1/100;
+    float x = *(float*)&x1/100.0;
     p+=4;
     unsigned int y1 = (contents[p]<<0)+(contents[p+1]<<8)+((unsigned int)contents[p+2]<<16)+((unsigned int)contents[p+3]<<24);
-    float y = *(float*)&y1/100;
+    float y = *(float*)&y1/100.0;
     p+=4;
     unsigned int z1 = (contents[p]<<0)+(contents[p+1]<<8)+((unsigned int)contents[p+2]<<16)+((unsigned int)contents[p+3]<<24);
-    float z = *(float*)&z1/100;
+    float z = *(float*)&z1/100.0;
     p+=4;
     
     brick->position[0]=x;
@@ -313,6 +313,11 @@ remake:
     brick->rotation[0]=x;
     brick->rotation[1]=y;
     brick->rotation[2]=z;
+    printf("%f %f %f\n",x,y,z);
+
+    brick->size[0] = 1;
+    brick->size[1] = 1;
+    brick->size[2] = 1;
     brick->next = 0;
 
     // push into the stack

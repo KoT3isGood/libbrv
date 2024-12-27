@@ -1,0 +1,213 @@
+{
+  "asset" : {
+    "generator" : "UE Viewer (umodel) build 1590",
+    "version" : "2.0"
+  },
+  "scene" : 0,
+  "scenes" : [
+    {
+      "nodes" : [ 0 ]
+    }
+  ],
+  "nodes" : [
+    {
+      "name" : "SM_Actuator_1x1x6_Top",
+      "mesh" : 0
+    }
+  ],
+  "materials" : [
+    {
+      "name" : "M_Brick",
+      "pbrMetallicRoughness" : {
+        "baseColorFactor" : [ 0.3, 0.3, 0.3, 1.0 ],
+        "metallicFactor" : 0.1,
+        "roughnessFactor" : 0.5
+      }
+    },
+    {
+      "name" : "M_Brick_Chrome",
+      "pbrMetallicRoughness" : {
+        "baseColorFactor" : [ 0.9, 0.3, 0.3, 1.0 ],
+        "metallicFactor" : 0.1,
+        "roughnessFactor" : 0.5
+      }
+    }
+  ],
+  "meshes" : [
+    {
+      "primitives" : [
+        {
+          "attributes" : {
+            "POSITION" : 1,
+            "NORMAL" : 2,
+            "TANGENT" : 3,
+            "COLOR_0" : 4,
+            "TEXCOORD_0" : 5
+          },
+          "indices" : 0,
+          "material" : 0
+        },
+        {
+          "attributes" : {
+            "POSITION" : 7,
+            "NORMAL" : 8,
+            "TANGENT" : 9,
+            "COLOR_0" : 10,
+            "TEXCOORD_0" : 11
+          },
+          "indices" : 6,
+          "material" : 1
+        }
+      ],
+      "name" : "SM_Actuator_1x1x6_Top"
+    }
+  ],
+  "buffers" : [
+    {
+      "uri" : "SM_Actuator_1x1x6_Top.bin",
+      "byteLength" : 10496
+    }
+  ],
+  "bufferViews" : [
+    {
+      "buffer" : 0,
+      "byteOffset" : 0,
+      "byteLength" : 852
+    },
+    {
+      "buffer" : 0,
+      "byteOffset" : 852,
+      "byteLength" : 1776
+    },
+    {
+      "buffer" : 0,
+      "byteOffset" : 2628,
+      "byteLength" : 1776
+    },
+    {
+      "buffer" : 0,
+      "byteOffset" : 4404,
+      "byteLength" : 2368
+    },
+    {
+      "buffer" : 0,
+      "byteOffset" : 6772,
+      "byteLength" : 592
+    },
+    {
+      "buffer" : 0,
+      "byteOffset" : 7364,
+      "byteLength" : 1184
+    },
+    {
+      "buffer" : 0,
+      "byteOffset" : 8548,
+      "byteLength" : 180
+    },
+    {
+      "buffer" : 0,
+      "byteOffset" : 8728,
+      "byteLength" : 408
+    },
+    {
+      "buffer" : 0,
+      "byteOffset" : 9136,
+      "byteLength" : 408
+    },
+    {
+      "buffer" : 0,
+      "byteOffset" : 9544,
+      "byteLength" : 544
+    },
+    {
+      "buffer" : 0,
+      "byteOffset" : 10088,
+      "byteLength" : 136
+    },
+    {
+      "buffer" : 0,
+      "byteOffset" : 10224,
+      "byteLength" : 272
+    }
+  ],
+  "accessors" : [
+    {
+      "bufferView" : 0,
+      "componentType" : 5123,
+      "count" : 426,
+      "type" : "SCALAR"
+    },
+    {
+      "bufferView" : 1,
+      "min" : [ -0.15, -4.88762e-08, -0.15 ],
+      "max" : [ 0.15, 0.15, 0.15 ],
+      "componentType" : 5126,
+      "count" : 148,
+      "type" : "VEC3"
+    },
+    {
+      "bufferView" : 2,
+      "componentType" : 5126,
+      "count" : 148,
+      "type" : "VEC3"
+    },
+    {
+      "bufferView" : 3,
+      "componentType" : 5126,
+      "count" : 148,
+      "type" : "VEC4"
+    },
+    {
+      "bufferView" : 4,
+      "normalized" : true,
+      "componentType" : 5121,
+      "count" : 148,
+      "type" : "VEC4"
+    },
+    {
+      "bufferView" : 5,
+      "componentType" : 5126,
+      "count" : 148,
+      "type" : "VEC2"
+    },
+    {
+      "bufferView" : 6,
+      "componentType" : 5123,
+      "count" : 90,
+      "type" : "SCALAR"
+    },
+    {
+      "bufferView" : 7,
+      "min" : [ -0.0996082, -1.6, -0.0996079 ],
+      "max" : [ 0.0996082, 7.06034e-08, 0.0996088 ],
+      "componentType" : 5126,
+      "count" : 34,
+      "type" : "VEC3"
+    },
+    {
+      "bufferView" : 8,
+      "componentType" : 5126,
+      "count" : 34,
+      "type" : "VEC3"
+    },
+    {
+      "bufferView" : 9,
+      "componentType" : 5126,
+      "count" : 34,
+      "type" : "VEC4"
+    },
+    {
+      "bufferView" : 10,
+      "normalized" : true,
+      "componentType" : 5121,
+      "count" : 34,
+      "type" : "VEC4"
+    },
+    {
+      "bufferView" : 11,
+      "componentType" : 5126,
+      "count" : 34,
+      "type" : "VEC2"
+    }
+  ]
+}

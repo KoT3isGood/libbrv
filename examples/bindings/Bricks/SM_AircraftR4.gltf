@@ -1,0 +1,187 @@
+{
+  "asset" : {
+    "generator" : "UE Viewer (umodel) build 1590",
+    "version" : "2.0"
+  },
+  "scene" : 0,
+  "scenes" : [
+    {
+      "nodes" : [ 0 ]
+    }
+  ],
+  "nodes" : [
+    {
+      "name" : "SM_AircraftR4",
+      "mesh" : 0
+    }
+  ],
+  "materials" : [
+    {
+      "name" : "M_AircraftR4",
+      "pbrMetallicRoughness" : {
+        "baseColorFactor" : [ 0.3, 0.3, 0.3, 1.0 ],
+        "metallicFactor" : 0.1,
+        "roughnessFactor" : 0.5
+      }
+    },
+    {
+      "name" : "M_Brick",
+      "pbrMetallicRoughness" : {
+        "baseColorFactor" : [ 0.9, 0.3, 0.3, 1.0 ],
+        "metallicFactor" : 0.1,
+        "roughnessFactor" : 0.5
+      }
+    }
+  ],
+  "meshes" : [
+    {
+      "primitives" : [
+        {
+          "attributes" : {
+            "POSITION" : 1,
+            "NORMAL" : 2,
+            "TANGENT" : 3,
+            "TEXCOORD_0" : 4
+          },
+          "indices" : 0,
+          "material" : 0
+        },
+        {
+          "attributes" : {
+            "POSITION" : 6,
+            "NORMAL" : 7,
+            "TANGENT" : 8,
+            "TEXCOORD_0" : 9
+          },
+          "indices" : 5,
+          "material" : 1
+        }
+      ],
+      "name" : "SM_AircraftR4"
+    }
+  ],
+  "buffers" : [
+    {
+      "uri" : "SM_AircraftR4.bin",
+      "byteLength" : 21720
+    }
+  ],
+  "bufferViews" : [
+    {
+      "buffer" : 0,
+      "byteOffset" : 0,
+      "byteLength" : 648
+    },
+    {
+      "buffer" : 0,
+      "byteOffset" : 648,
+      "byteLength" : 2592
+    },
+    {
+      "buffer" : 0,
+      "byteOffset" : 3240,
+      "byteLength" : 2592
+    },
+    {
+      "buffer" : 0,
+      "byteOffset" : 5832,
+      "byteLength" : 3456
+    },
+    {
+      "buffer" : 0,
+      "byteOffset" : 9288,
+      "byteLength" : 1728
+    },
+    {
+      "buffer" : 0,
+      "byteOffset" : 11016,
+      "byteLength" : 1104
+    },
+    {
+      "buffer" : 0,
+      "byteOffset" : 12120,
+      "byteLength" : 2400
+    },
+    {
+      "buffer" : 0,
+      "byteOffset" : 14520,
+      "byteLength" : 2400
+    },
+    {
+      "buffer" : 0,
+      "byteOffset" : 16920,
+      "byteLength" : 3200
+    },
+    {
+      "buffer" : 0,
+      "byteOffset" : 20120,
+      "byteLength" : 1600
+    }
+  ],
+  "accessors" : [
+    {
+      "bufferView" : 0,
+      "componentType" : 5123,
+      "count" : 324,
+      "type" : "SCALAR"
+    },
+    {
+      "bufferView" : 1,
+      "min" : [ -0.6, -5.36461e-09, -0.15 ],
+      "max" : [ 0.6, 0.6, 0.15 ],
+      "componentType" : 5126,
+      "count" : 216,
+      "type" : "VEC3"
+    },
+    {
+      "bufferView" : 2,
+      "componentType" : 5126,
+      "count" : 216,
+      "type" : "VEC3"
+    },
+    {
+      "bufferView" : 3,
+      "componentType" : 5126,
+      "count" : 216,
+      "type" : "VEC4"
+    },
+    {
+      "bufferView" : 4,
+      "componentType" : 5126,
+      "count" : 216,
+      "type" : "VEC2"
+    },
+    {
+      "bufferView" : 5,
+      "componentType" : 5123,
+      "count" : 552,
+      "type" : "SCALAR"
+    },
+    {
+      "bufferView" : 6,
+      "min" : [ -0.555, 0.6, -0.105 ],
+      "max" : [ 0.555, 0.65, 0.105 ],
+      "componentType" : 5126,
+      "count" : 200,
+      "type" : "VEC3"
+    },
+    {
+      "bufferView" : 7,
+      "componentType" : 5126,
+      "count" : 200,
+      "type" : "VEC3"
+    },
+    {
+      "bufferView" : 8,
+      "componentType" : 5126,
+      "count" : 200,
+      "type" : "VEC4"
+    },
+    {
+      "bufferView" : 9,
+      "componentType" : 5126,
+      "count" : 200,
+      "type" : "VEC2"
+    }
+  ]
+}

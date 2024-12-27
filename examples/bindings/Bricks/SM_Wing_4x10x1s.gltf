@@ -1,0 +1,112 @@
+{
+  "asset" : {
+    "generator" : "UE Viewer (umodel) build 1590",
+    "version" : "2.0"
+  },
+  "scene" : 0,
+  "scenes" : [
+    {
+      "nodes" : [ 0 ]
+    }
+  ],
+  "nodes" : [
+    {
+      "name" : "SM_Wing_4x10x1s",
+      "mesh" : 0
+    }
+  ],
+  "materials" : [
+    {
+      "name" : "M_Brick",
+      "pbrMetallicRoughness" : {
+        "baseColorFactor" : [ 0.3, 0.3, 0.3, 1.0 ],
+        "metallicFactor" : 0.1,
+        "roughnessFactor" : 0.5
+      }
+    }
+  ],
+  "meshes" : [
+    {
+      "primitives" : [
+        {
+          "attributes" : {
+            "POSITION" : 1,
+            "NORMAL" : 2,
+            "TANGENT" : 3,
+            "TEXCOORD_0" : 4
+          },
+          "indices" : 0,
+          "material" : 0
+        }
+      ],
+      "name" : "SM_Wing_4x10x1s"
+    }
+  ],
+  "buffers" : [
+    {
+      "uri" : "SM_Wing_4x10x1s.bin",
+      "byteLength" : 124620
+    }
+  ],
+  "bufferViews" : [
+    {
+      "buffer" : 0,
+      "byteOffset" : 0,
+      "byteLength" : 12684
+    },
+    {
+      "buffer" : 0,
+      "byteOffset" : 12684,
+      "byteLength" : 27984
+    },
+    {
+      "buffer" : 0,
+      "byteOffset" : 40668,
+      "byteLength" : 27984
+    },
+    {
+      "buffer" : 0,
+      "byteOffset" : 68652,
+      "byteLength" : 37312
+    },
+    {
+      "buffer" : 0,
+      "byteOffset" : 105964,
+      "byteLength" : 18656
+    }
+  ],
+  "accessors" : [
+    {
+      "bufferView" : 0,
+      "componentType" : 5123,
+      "count" : 6342,
+      "type" : "SCALAR"
+    },
+    {
+      "bufferView" : 1,
+      "min" : [ -0.6, -4.39886e-07, -2.7 ],
+      "max" : [ 0.6, 0.15, 0.3 ],
+      "componentType" : 5126,
+      "count" : 2332,
+      "type" : "VEC3"
+    },
+    {
+      "bufferView" : 2,
+      "componentType" : 5126,
+      "count" : 2332,
+      "type" : "VEC3"
+    },
+    {
+      "bufferView" : 3,
+      "componentType" : 5126,
+      "count" : 2332,
+      "type" : "VEC4"
+    },
+    {
+      "bufferView" : 4,
+      "componentType" : 5126,
+      "count" : 2332,
+      "type" : "VEC2"
+    }
+  ]
+}
