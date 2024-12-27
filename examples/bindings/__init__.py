@@ -5,6 +5,7 @@ import bpy
 from bpy_extras.io_utils import ImportHelper
 from bpy.props import StringProperty
 from bpy.types import Operator
+from bpy.props import StringProperty, BoolProperty, FloatProperty
 import math
 import time
 
@@ -109,14 +110,23 @@ def import_new_brick(name):
     loaded_bricks[name]=imported_object
     return imported_object
 
+def create_clone(name):
+    # TODO: FIX INSTANCING
+    instance = bpy.data.objects.new(name=name, object_data=loaded_bricks[name].data.copy())
+    bpy.context.scene.collection.objects.link(instance)
+    return instance
+
 def create_instance(name):
     instance = bpy.data.objects.new(name=name, object_data=loaded_bricks[name].data)
     bpy.context.scene.collection.objects.link(instance)
     return instance
 
-def getBrick(name):
+def getBrick(self, name):
     if name in loaded_bricks:
-        return create_instance(name)
+        if not self.import_materials:
+            return create_instance(name)
+        else:
+            return create_clone(name)
     else:
         return import_new_brick(name)
 
@@ -127,17 +137,22 @@ def read_brv(self, context, filepath):
         content = file.read()
     vehicle = lib.brv_read(cast(content, POINTER(c_ubyte)))
     lib.brv_deserialize(pointer(vehicle),None)
-    print("brv version:",vehicle.version)
+    if vehicle.version>14 or vehicle.version<0:
+        self.report({'ERROR'}, f"Error importing .brv file: version is not supported ({vehicle.version})")
+        return {'CANCELLED'}
 
 
     loaded_bricks.clear()
     bricks = vehicle.bricks
+    i = 0
+    print(self.import_materials)
     while bricks:
+        i+=1
         # print(brick.contents.name)
         brick = bricks.contents
         bricks = brick.next
 
-        model = getBrick(brick.name.decode("UTF-8"))
+        model = getBrick(self, brick.name.decode("UTF-8"))
         if model==0:
             continue
         model.location.x = brick.position[0]
@@ -152,6 +167,13 @@ def read_brv(self, context, filepath):
         model.scale.x = brick.size[0]
         model.scale.y = brick.size[1]
         model.scale.z = brick.size[2]
+
+        if self.import_materials:
+            materialname = f"Plasic{i}"
+            mat = bpy.data.materials.new(materialname)
+            mat.diffuse_color = (brick.material.color[0], brick.material.color[1], brick.material.color[2], 1.0)
+            model.active_material = mat
+
 
     loaded_bricks.clear()
 
@@ -168,6 +190,11 @@ class ImportBrv(Operator, ImportHelper):
             default="*.brv",
             options={'HIDDEN'},
             maxlen=255,
+            )
+
+    import_materials: BoolProperty(
+            name="(Experimental) Enable material import",
+            default=False
             )
     def execute(self, context):
         return read_brv(self, context, self.filepath)
