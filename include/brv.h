@@ -34,7 +34,18 @@
 // Version where the saved element size has been fixed
 #define BR_SAVE_FIXED_ELEMENT_SIZE_VERSION 3
 
+typedef enum brv_input_modes {
+  BRV_INPUT_AXIS=0,
+  BRV_INPUT_SOURCE_BRICKS=1,
+  BRV_INPUT_VALUE=2,
+} brv_input_modes;
 
+typedef enum brv_brick_type {
+  BRV_TYPE_SCALABLE_BRICK=1,
+  BRV_TYPE_INPUT=2,
+  BRV_TYPE_MATH_BRICK=4,
+  BRV_TYPE_TEXT=8,
+} brv_brick_type;
 // raw brick parameter
 typedef struct {
   char* name;
@@ -59,11 +70,7 @@ typedef struct brv_material {
 } material;
 
 typedef struct brv_input {
-  enum brv_input_modes {
-    BRV_INPUT_AXIS=0,
-    BRV_INPUT_SOURCE_BRICKS=1,
-    BRV_INPUT_VALUE=2,
-  };
+
   int mode;
 
   const char* inputaxis;
@@ -83,12 +90,6 @@ typedef struct brv_brick {
   struct brv_brick* next;
   char* name;
 
-  enum brv_brick_type {
-    BRV_TYPE_SCALABLE_BRICK=1,
-    BRV_TYPE_INPUT=2,
-    BRV_TYPE_MATH_BRICK=4,
-    BRV_TYPE_TEXT=8,
-  };
   int type;
 
   unsigned char numparameters;

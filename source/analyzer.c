@@ -3,6 +3,7 @@
 #include "stdint.h"
 #include "stdlib.h"
 #include "memory.h"
+#include "string.h"
 
 
 void brv_deserialize(brv_vehicle* vehicle, brv_serialize_callback callback) {
@@ -89,7 +90,7 @@ remake:
         int a = 0;
         int numinputs=contents[0]+contents[1];
         brick->input.numsourcebricks=numinputs;
-        brick->input.sourcebricks=(brv_brick*)malloc(sizeof(brv_brick*)*numinputs);
+        brick->input.sourcebricks=(brv_brick**)malloc(sizeof(brv_brick*)*numinputs);
         for (int j = 0;j<numinputs;j++) {
           int brickid=contents[2+j]+contents[3+j*2];
           for (brv_brick* brick2=vehicle->bricks;brick2;brick2=brick2->next) {
@@ -105,7 +106,7 @@ remake:
         int a = 0;                                        
         int numinputs=contents[0]+contents[1];
         brick->inputa.numsourcebricks=numinputs;
-        brick->inputa.sourcebricks=(brv_brick*)malloc(sizeof(brv_brick*)*numinputs);
+        brick->inputa.sourcebricks=(brv_brick**)malloc(sizeof(brv_brick*)*numinputs);
         for (int j = 0;j<numinputs;j++) {
           int brickid=contents[2+j]+contents[3+j*2];
           for (brv_brick* brick2=vehicle->bricks;brick2;brick2=brick2->next){
@@ -121,7 +122,7 @@ remake:
         int a = 0;                                        
         int numinputs=contents[0]+contents[1];
         brick->inputb.numsourcebricks=numinputs;
-        brick->inputb.sourcebricks=(brv_brick*)malloc(sizeof(brv_brick*)*numinputs);
+        brick->inputb.sourcebricks=(brv_brick**)malloc(sizeof(brv_brick*)*numinputs);
         for (int j = 0;j<numinputs;j++) {
           int brickid=contents[2+j]+contents[3+j*2];
           for (brv_brick* brick2=vehicle->bricks;brick2;brick2=brick2->next){

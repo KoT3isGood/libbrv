@@ -4,6 +4,7 @@
 #include "stdlib.h"
 #include "memory.h"
 #include "ctype.h"
+#include "string.h"
 
 
 brv_vehicle brv_read(unsigned char* contents) {
