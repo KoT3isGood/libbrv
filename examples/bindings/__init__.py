@@ -168,39 +168,42 @@ def read_brv(self, context, filepath):
     i = 0
     print(self.import_materials)
     while bricks:
-        i+=1
-        # print(brick.contents.name)
-        brick = bricks.contents
-        bricks = brick.next
+        try:
+            i+=1
+            # print(brick.contents.name)
+            brick = bricks.contents
+            bricks = brick.next
 
-        model = getBrick(self, brick.name.decode("UTF-8"))
-        if model==0:
-            continue
-        model.location.x = brick.position[0]
-        model.location.y = brick.position[1]*-1
-        model.location.z = brick.position[2]
-       
-        model.rotation_mode = "XYZ"
-        model.rotation_euler.x = math.radians(brick.rotation[2])
-        model.rotation_euler.y = math.radians(brick.rotation[0])*-1
-        model.rotation_euler.z = math.radians(brick.rotation[1])*-1
+            model = getBrick(self, brick.name.decode("UTF-8"))
+            if model==0:
+                continue
+            model.location.x = brick.position[0]
+            model.location.y = brick.position[1]*-1
+            model.location.z = brick.position[2]
+           
+            model.rotation_mode = "XYZ"
+            model.rotation_euler.x = math.radians(brick.rotation[2])
+            model.rotation_euler.y = math.radians(brick.rotation[0])*-1
+            model.rotation_euler.z = math.radians(brick.rotation[1])*-1
 
-        model.scale.x = brick.size[0]
-        model.scale.y = brick.size[1]
-        model.scale.z = brick.size[2]
+            model.scale.x = brick.size[0]
+            model.scale.y = brick.size[1]
+            model.scale.z = brick.size[2]
 
-        if self.import_materials:
-            materialname = f"Plasic{i}"
-            mat = bpy.data.materials.new(materialname)
-            mat.diffuse_color = (brick.material.color[0], brick.material.color[1], brick.material.color[2], 1.0)
-            model.active_material = mat
-        if brick.type & 16:
-            shader = model.modifiers.new(name="brv_wheel",type='NODES')
-            shader.node_group=geo_node_group
-            wd_node = shader.node_group.nodes.get("wheelradius")
-            wd_node.outputs[0].default_value=(brick.wheel.diameter-wheel_diameter_lut[brick.name.decode("UTF-8")])/2
-            wd_node = shader.node_group.nodes.get("wheelwidth")
-            wd_node.outputs[0].default_value=(brick.wheel.width-wheel_width_lut[brick.name.decode("UTF-8")])
+            if self.import_materials:
+                materialname = f"Plasic{i}"
+                mat = bpy.data.materials.new(materialname)
+                mat.diffuse_color = (brick.material.color[0], brick.material.color[1], brick.material.color[2], 1.0)
+                model.active_material = mat
+            if brick.type & 16:
+                shader = model.modifiers.new(name="brv_wheel",type='NODES')
+                shader.node_group=geo_node_group
+                wd_node = shader.node_group.nodes.get("wheelradius")
+                wd_node.outputs[0].default_value=(brick.wheel.diameter-wheel_diameter_lut[brick.name.decode("UTF-8")])/2
+                wd_node = shader.node_group.nodes.get("wheelwidth")
+                wd_node.outputs[0].default_value=(brick.wheel.width-wheel_width_lut[brick.name.decode("UTF-8")])
+        except:
+            print(f"Unsupported brick: {brick.name}")
 
 
     loaded_bricks.clear()
