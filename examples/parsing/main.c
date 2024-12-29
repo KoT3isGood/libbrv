@@ -57,10 +57,11 @@ int main(int argc, char** argv) {
   printf("number of classes: %i\n",vehicle.numclasses);
   printf("number of properties: %i\n",vehicle.numproperties);
   printf("number of bricks: %i\n",vehicle.numobjects);
+  printf("sizeof(%i)\n",sizeof(brv_brick));
   for (brv_brick* brick=vehicle.bricks;brick;brick=brick->next) {
     printf("  %s\n",brick->name);
     for (int i = 0;i<brick->numparameters;i++) {
-      printf("    %s",brick->parameters[i].name);
+      printf("  %i %s",brick->parameters[i].datasize,brick->parameters[i].name);
     }
     printf("\n");
   }

@@ -52,6 +52,12 @@ class brv_output(Structure):
             ("maxout",c_float),
             ]
 
+class brv_wheel(Structure):
+    _fields_ = [
+            ("diameter",c_float),
+            ("width", c_float),
+            ]
+
 
 brv_brick._fields_ = [
         ("next", POINTER(brv_brick)),
@@ -67,10 +73,12 @@ brv_brick._fields_ = [
         ("inputa",brv_input),
         ("inputb",brv_input),
         ("text",c_char_p),
+        ("wheel",brv_wheel),
         ("size",c_float*3),
         ("position",c_float*3),
         ("rotation",c_float*3),
         ]
+
 
 
 class brv_vehicle(Structure):
@@ -95,6 +103,14 @@ lib.brv_read.restype = brv_vehicle
 print(lib)
 loaded_bricks = {}
 
+wheel_diameter_lut = {}
+wheel_diameter_lut["SprocketWheel"]=0.90
+wheel_diameter_lut["IdlerWheel"]=0.90
+wheel_diameter_lut["DragWheel_4x2"]=0.60
+wheel_width_lut = {}
+wheel_width_lut["SprocketWheel"]=0.3
+wheel_width_lut["IdlerWheel"]=0.3
+
 def import_new_brick(name):
     modelpath = "Bricks/SM_"+name+".gltf"
     modelpath=os.path.join(addon_path,modelpath)
@@ -110,29 +126,23 @@ def import_new_brick(name):
     loaded_bricks[name]=imported_object
     return imported_object
 
-def create_clone(name):
-    # TODO: FIX INSTANCING
-    instance = bpy.data.objects.new(name=name, object_data=loaded_bricks[name].data.copy())
-    bpy.context.scene.collection.objects.link(instance)
-    return instance
-
 def create_instance(name):
-    instance = bpy.data.objects.new(name=name, object_data=loaded_bricks[name].data)
+    instance = bpy.data.objects.new(name=name, object_data=loaded_bricks[name].data.copy())
+
     bpy.context.scene.collection.objects.link(instance)
     return instance
 
 def getBrick(self, name):
     if name in loaded_bricks:
-        if not self.import_materials:
-            return create_instance(name)
-        else:
-            return create_clone(name)
+        return create_instance(name)
     else:
         return import_new_brick(name)
 
 
 
 def read_brv(self, context, filepath):
+
+
     with open(filepath, 'rb') as file:
         content = file.read()
     vehicle = lib.brv_read(cast(content, POINTER(c_ubyte)))
@@ -141,6 +151,17 @@ def read_brv(self, context, filepath):
         self.report({'ERROR'}, f"Error importing .brv file: version is not supported ({vehicle.version})")
         return {'CANCELLED'}
 
+    shaderspath = "Bricks/shaders.blend"
+    shaderspath=os.path.join(addon_path,shaderspath)
+
+    wheel_node = "brv_wheel"
+    with bpy.data.libraries.load(shaderspath, link=False) as (data_from, data_to):
+        if wheel_node in data_from.node_groups:
+            data_to.node_groups.append(wheel_node)
+
+    # Now the node group is available in bpy.data.node_groups
+    geo_node_group = bpy.data.node_groups[wheel_node]
+    print(f"Loaded Geometry Node Group: {geo_node_group.name}")
 
     loaded_bricks.clear()
     bricks = vehicle.bricks
@@ -173,6 +194,13 @@ def read_brv(self, context, filepath):
             mat = bpy.data.materials.new(materialname)
             mat.diffuse_color = (brick.material.color[0], brick.material.color[1], brick.material.color[2], 1.0)
             model.active_material = mat
+        if brick.type & 16:
+            shader = model.modifiers.new(name="brv_wheel",type='NODES')
+            shader.node_group=geo_node_group
+            wd_node = shader.node_group.nodes.get("wheelradius")
+            wd_node.outputs[0].default_value=(brick.wheel.diameter-wheel_diameter_lut[brick.name.decode("UTF-8")])/2
+            wd_node = shader.node_group.nodes.get("wheelwidth")
+            wd_node.outputs[0].default_value=(brick.wheel.width-wheel_width_lut[brick.name.decode("UTF-8")])
 
 
     loaded_bricks.clear()

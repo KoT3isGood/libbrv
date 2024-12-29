@@ -45,6 +45,7 @@ typedef enum brv_brick_type {
   BRV_TYPE_INPUT=2,
   BRV_TYPE_MATH_BRICK=4,
   BRV_TYPE_TEXT=8,
+  BRV_TYPE_WHEEL=16
 } brv_brick_type;
 // raw brick parameter
 typedef struct {
@@ -86,6 +87,11 @@ typedef struct brv_output {
   float maxout;
 } brv_output;
 
+typedef struct brv_wheel {
+  float diameter;
+  float width;
+} brv_wheel;
+
 typedef struct brv_brick {
   struct brv_brick* next;
   char* name;
@@ -110,6 +116,9 @@ typedef struct brv_brick {
 
   // text bricks
   char* text;
+
+  // wheels
+  brv_wheel wheel;
 
   // scalable bricks, wheels, displays etc.
   float size[3];

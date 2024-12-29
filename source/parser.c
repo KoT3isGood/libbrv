@@ -314,7 +314,6 @@ remake:
     brick->rotation[0]=x;
     brick->rotation[1]=y;
     brick->rotation[2]=z;
-    printf("%f %f %f\n",x,y,z);
 
     brick->size[0] = 1;
     brick->size[1] = 1;

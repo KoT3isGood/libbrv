@@ -43,6 +43,12 @@ class brv_output(Structure):
             ("maxout",c_float),
             ]
 
+class brv_wheel(Structure):
+    _fields_ = [
+            ("diameter",c_float),
+            ("width", c_float),
+            ]
+
 
 brv_brick._fields_ = [
         ("next", POINTER(brv_brick)),
@@ -57,6 +63,7 @@ brv_brick._fields_ = [
         ("operation",c_char_p),
         ("inputa",brv_input),
         ("inputb",brv_input),
+        ("wheel",brv_wheel),
         ("size",c_float*3),
         ("position",c_float*3),
         ("rotation",c_float*3),

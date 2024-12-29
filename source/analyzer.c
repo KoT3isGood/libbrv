@@ -4,7 +4,7 @@
 #include "stdlib.h"
 #include "memory.h"
 #include "string.h"
-
+#include "math.h"
 
 void brv_deserialize(brv_vehicle* vehicle, brv_serialize_callback callback) {
   if (vehicle->version<BR_SAVE_INTERFACE_VERSION) {
@@ -55,9 +55,12 @@ legacy:
 remake:
   brick = 0;
   for (brick=vehicle->bricks;brick;brick=brick->next) {
+    brick->type = 0;
     for (int i = 0;i<brick->numparameters;i++) {
       char* name = brick->parameters[i].name;
       unsigned char* contents = brick->parameters[i].data;
+
+   
       if (!strcmp(name,"BrickSize")) {
         brick->type|=BRV_TYPE_SCALABLE_BRICK;
         if (vehicle->version<BR_SAVE_BRICK_UNITS_FLOAT_VERSION) {
@@ -79,12 +82,58 @@ remake:
         }
         continue;
       }
+      if (!strcmp(name, "BrickColor")) 	{
+        // https://github.com/Inseckto/HSV-to-RGB/blob/master/HSV2RGB.c
+        float r, g, b;
+      
+        float h = contents[0] / 255.0;
+        float s = contents[1] / 255.0;
+        float v = contents[2] / 255.0;
+        
+        int i = floor(h * 6);
+        float f = h * 6 - i;
+        float p = v * (1 - s);
+        float q = v * (1 - f * s);
+        float t = v * (1 - (1 - f) * s);
+        
+        switch (i % 6) {
+          case 0: r = v, g = t, b = p; break;
+          case 1: r = q, g = v, b = p; break;
+          case 2: r = p, g = v, b = t; break;
+          case 3: r = p, g = q, b = v; break;
+          case 4: r = t, g = p, b = v; break;
+          case 5: r = v, g = p, b = q; break;
+        }
+
+
+        brick->material.color[0]=r;
+        brick->material.color[1]=g;
+        brick->material.color[2]=b;
+        brick->material.alpha=contents[3]/255.0;
+      }
       if (!strcmp(name,"Text")) {
         brick->type|=BRV_TYPE_TEXT;
         char* text = (char*)malloc(contents[0]);
         memcpy(text,&contents[2],contents[0]);
         brick->text=text;
       }
+
+      if (!strcmp(name,"WheelDiameter")) {
+        brick->type|=BRV_TYPE_WHEEL;
+        unsigned int x1 = (contents[0]<<0)+(contents[1]<<8)+((unsigned int)contents[2]<<16)+((unsigned int)contents[3]<<24);
+        float x = *(float*)&x1/10.0;
+        brick->wheel.diameter=x;
+      }
+
+      if (!strcmp(name,"WheelWidth")) {
+        brick->type|=BRV_TYPE_WHEEL;
+        unsigned int x1 = (contents[0]<<0)+(contents[1]<<8)+((unsigned int)contents[2]<<16)+((unsigned int)contents[3]<<24);
+        float x = *(float*)&x1/10.0;
+        brick->wheel.width=x;
+      }
+
+
+
       if (!strcmp(name, "InputChannel")) {
         brick->type|=BRV_TYPE_INPUT;
         int a = 0;
@@ -132,8 +181,7 @@ remake:
             };   
           }
         }                              
-      }          
-       
+      }           
     }
   }
 
