@@ -23,6 +23,9 @@ pub fn build(b: *std.Build) void {
     lib.linkLibC();
     const lib_artifact = b.addInstallArtifact(lib, .{});
     lib_artifact.dest_dir = .{ .custom = "../lib/" };
+    lib_artifact.pdb_dir = lib_artifact.dest_dir;
+    lib_artifact.h_dir = lib_artifact.dest_dir;
+    lib_artifact.implib_dir = lib_artifact.dest_dir;
     b.getInstallStep().dependOn(&lib_artifact.step);
 
     // build examples
