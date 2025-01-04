@@ -5,4 +5,4 @@ main.py - basic showcase of bindings to the bindings
 __init__.py - blender plugin
 
 
-To install blender plugin copy shader library from libs/ (either brv.dll or libbrv.so) to the examples/bindings/. Then make zip of bindings folder and load it inside of blender.
+To install blender plugin copy shader library from lib/ (either brv.dll or libbrv.so) to the examples/bindings/. Then make zip of bindings folder and load it inside of blender.
