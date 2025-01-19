@@ -130,8 +130,8 @@ typedef struct brv_brick {
 } brv_brick;
 
 #ifdef BRV_NO_DESERIALIZATION
-typedef brv_brick brv_object
-typedef brv_brv_brick_parameter brv_parameter
+typedef brv_brick brv_object;
+typedef brv_brick_parameter brv_parameter;
 #endif
 
 

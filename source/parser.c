@@ -153,9 +153,11 @@ bricktraverse_legacy:
       p+=9;
     }
 
+#ifndef BRV_NO_DESERIALIZATION
     brick->size[0]=1;
     brick->size[1]=1;
     brick->size[2]=1;
+#endif
 
     // push into array
     if (currentbrick) {
@@ -315,9 +317,11 @@ remake:
     brick->rotation[1]=y;
     brick->rotation[2]=z;
 
+#ifndef BRV_NO_DESERIALIZATION
     brick->size[0] = 1;
     brick->size[1] = 1;
     brick->size[2] = 1;
+#endif
     brick->next = 0;
 
     // push into the stack
