@@ -1,4 +1,6 @@
 #pragma once
+// you can use #define BRV_NO_DESERIALIZATION
+// to use brv format as format not only for br vehicles
 
 // from Source/BrickRigs/BrickEditor/BrickEditorSaveVersion.h
 // Current save version, the legacy UBrickStatics version ended at 6
@@ -96,11 +98,11 @@ typedef struct brv_brick {
   struct brv_brick* next;
   char* name;
 
-  int type;
-
   unsigned char numparameters;
   brv_brick_parameter* parameters;
 
+#ifndef BRV_NO_DESERIALIZATION
+  int type;
   // materials
   struct brv_material material;
 
@@ -122,11 +124,15 @@ typedef struct brv_brick {
 
   // scalable bricks, wheels, displays etc.
   float size[3];
-
+#endif
   float position[3];
   float rotation[3];
 } brv_brick;
 
+#ifdef BRV_NO_DESERIALIZATION
+typedef brv_brick brv_object
+typedef brv_brv_brick_parameter brv_parameter
+#endif
 
 
 typedef struct {
@@ -150,11 +156,13 @@ void libbrv_init(const char** dynamically_sized_properties, unsigned int num);
 // reads raw brv and gets all bricks and properties
 brv_vehicle brv_read(unsigned char* contents);
 
+#ifndef BRV_NO_DESERIALIZATION 
 // converts properties into brick parameters
 void brv_deserialize(brv_vehicle* vehicle, brv_serialize_callback callback);
 
 // converts brick parameters to properties
 void brv_serialze(brv_vehicle* vehicle, brv_deserialize_callback callback); 
+#endif
 
 // destroys vehicle
 void brv_close(brv_vehicle vehicle);

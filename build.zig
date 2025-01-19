@@ -23,9 +23,9 @@ pub fn build(b: *std.Build) void {
     lib.linkLibC();
     const lib_artifact = b.addInstallArtifact(lib, .{});
     lib_artifact.dest_dir = .{ .custom = "../lib/" };
-    lib_artifact.pdb_dir = lib_artifact.dest_dir;
-    lib_artifact.h_dir = lib_artifact.dest_dir;
-    lib_artifact.implib_dir = lib_artifact.dest_dir;
+    if (target.result.os.tag == .windows) lib_artifact.pdb_dir = lib_artifact.dest_dir;
+    if (target.result.os.tag == .windows) lib_artifact.h_dir = lib_artifact.dest_dir;
+    if (target.result.os.tag == .windows) lib_artifact.implib_dir = lib_artifact.dest_dir;
     b.getInstallStep().dependOn(&lib_artifact.step);
 
     const slib = b.addStaticLibrary(.{
@@ -56,6 +56,6 @@ pub fn build(b: *std.Build) void {
     parsing.linkLibrary(slib);
     const parsing_artifact = b.addInstallArtifact(parsing, .{});
     parsing_artifact.dest_dir = .{ .custom = "../bin/parsing" };
-    parsing_artifact.pdb_dir = .{ .custom = "../bin/parsing" };
+    if (target.result.os.tag == .windows) parsing_artifact.pdb_dir = .{ .custom = "../bin/parsing" };
     b.getInstallStep().dependOn(&parsing_artifact.step);
 }

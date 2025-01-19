@@ -6,6 +6,8 @@
 #include "string.h"
 #include "math.h"
 
+
+#ifndef BRV_NO_DESERIALIZATION
 void brv_deserialize(brv_vehicle* vehicle, brv_serialize_callback callback) {
   if (vehicle->version<BR_SAVE_INTERFACE_VERSION) {
     goto legacy;
@@ -556,4 +558,4 @@ void brv_serialze(brv_vehicle* vehicle, brv_deserialize_callback callback) {
   }
 }; 
 
-
+#endif
