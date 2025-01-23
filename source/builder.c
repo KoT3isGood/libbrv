@@ -67,6 +67,7 @@ void brv_build(brv_vehicle vehicle, unsigned int* size, unsigned char** data) {
     filesize+=4;
     for (brv_brick* brick=vehicle.bricks;brick;brick=brick->next) {
       brv_brick2* genbrick=(brv_brick2*)malloc(sizeof(brv_brick2));
+      memset(genbrick,0,sizeof(brv_brick2));
       int foundid=0;
       bool found = 0;
       // create non-exisiting classes
@@ -110,7 +111,7 @@ void brv_build(brv_vehicle vehicle, unsigned int* size, unsigned char** data) {
       for (int i = 0;i<brick->numparameters;i++) {
         foundid = 0;
         found = 0;
-        brv_brick_parameter2* param;
+        brv_brick_parameter2* param=0;
         for(brv_brick_parameter2* parameter = startingparameters;parameter;parameter=parameter->next) {
            if (!strcmp(parameter->name,brick->parameters[i].name)) {
             found=1;
@@ -123,6 +124,7 @@ void brv_build(brv_vehicle vehicle, unsigned int* size, unsigned char** data) {
         if (found) {
         } else {
           param = (brv_brick_parameter2*)malloc(sizeof(brv_brick_parameter2));
+          memset(param,0,sizeof(brv_brick_parameter2));
           param->name = (char*)malloc(strlen(brick->parameters[i].name)+1);
           strcpy(param->name,brick->parameters[i].name);
 
@@ -151,7 +153,10 @@ void brv_build(brv_vehicle vehicle, unsigned int* size, unsigned char** data) {
         found = 0; 
         // now find parameters
         for(struct parameter* par = param->startingparameters;par;par=par->next) {
-          if (brick->parameters[i].datasize!=par->param->datasize) {
+          if (
+              brick->parameters[i].datasize
+              !=
+              par->param->datasize) {
             foundid++;
             continue;
           }
