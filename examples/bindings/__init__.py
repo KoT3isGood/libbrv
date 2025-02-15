@@ -62,9 +62,9 @@ class brv_wheel(Structure):
 brv_brick._fields_ = [
         ("next", POINTER(brv_brick)),
         ("name", c_char_p),
-        ("type", c_int),
         ("numparameters", c_ubyte),
         ("parameters",POINTER(brv_brick_parameter)),
+        ("type", c_int),
         ("material",brv_material),
         ("input",brv_input),
         ("output",brv_output),
@@ -94,13 +94,6 @@ class brv_vehicle(Structure):
 
 
 addon_path = os.path.dirname(__file__)
-if os.name=="posix":
-    lib = CDLL(os.path.join(addon_path,"libbrv.so"))
-if os.name=="nt":
-    lib = CDLL(os.path.join(addon_path,"brv.dll"))
-lib.brv_read.argtypes = [POINTER(c_ubyte)]
-lib.brv_read.restype = brv_vehicle
-print(lib)
 loaded_bricks = {}
 
 wheel_diameter_lut = {}
@@ -139,9 +132,12 @@ def getBrick(self, name):
         return import_new_brick(name)
 
 
+lib=None
+print(lib)
 
 def read_brv(self, context, filepath):
 
+    global lib
 
     with open(filepath, 'rb') as file:
         content = file.read()
@@ -233,12 +229,25 @@ class ImportBrv(Operator, ImportHelper):
 
 def menu_func_import(self, context):
     self.layout.operator(ImportBrv.bl_idname, text="Brick Rigs Vehicle (.brv)")
+
 def register():
+    global lib
     bpy.utils.register_class(ImportBrv)
     bpy.types.TOPBAR_MT_file_import.append(menu_func_import)
+    if os.name=="posix":
+        lib = CDLL(os.path.join(addon_path,"libbrv.so"))
+    if os.name=="nt":
+        lib = CDLL(os.path.join(addon_path,"brv.dll"))
+    lib.brv_read.argtypes = [POINTER(c_ubyte)]
+    lib.brv_read.restype = brv_vehicle
+    print(lib)
+
+
 def unregister():
+    global lib
     bpy.utils.unregister_class(ImportBrv)
     bpy.types.TOPBAR_MT_file_import.remove(menu_func_import)
+    del lib
 
 bl_info = {
     "name": "brv improter",

@@ -53,9 +53,9 @@ class brv_wheel(Structure):
 brv_brick._fields_ = [
         ("next", POINTER(brv_brick)),
         ("name", c_char_p),
-        ("type", c_int),
         ("numparameters", c_ubyte),
         ("parameters",POINTER(brv_brick_parameter)),
+        ("type", c_int),
         ("material",brv_material),
         ("input",brv_input),
         ("output",brv_output),
